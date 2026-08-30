@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central de criativos — Flowlance</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root{
+    --bg:#0D0D0F; --surface:#17171A; --surface-2:#1F1F23; --border:#2C2C31;
+    --gold:#F2B705; --gold-dim:#8A6B0E; --text:#EDEDEA; --text-2:#9C9A93;
+    --alto:#3FBF7F; --alto-bg:#0f2a1e;
+    --medio:#F2B705; --medio-bg:#3a2c05;
+    --baixo:#8a8a90; --baixo-bg:#232326;
+    --feita:#4C8DFF; --feita-bg:#132038;
+    --traffic:#F2765A; --traffic-bg:#3a1c14;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;padding:32px 20px 80px;}
+  .wrap{max-width:1080px;margin:0 auto;}
+  header{margin-bottom:20px;}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold);letter-spacing:0.04em;text-transform:uppercase;margin:0 0 8px;}
+  h1{font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:700;margin:0 0 8px;line-height:1.15;}
+  .sub{color:var(--text-2);font-size:14px;line-height:1.6;max-width:680px;margin:0;}
+
+  .tabs{display:flex;gap:6px;margin:24px 0 26px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+  .tab-btn{background:none;border:none;color:var(--text-2);padding:10px 16px;font-size:13.5px;font-family:'Inter',sans-serif;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+  .tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  .banner{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:12.5px;color:var(--text-2);margin:0 0 22px;}
+  .banner b{color:var(--gold-dim);}
+  .guide-box{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:0 0 22px;font-size:12.5px;color:var(--text-2);line-height:1.6;}
+  .guide-box h3{font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--text);margin:0 0 10px;}
+  .guide-box b{color:var(--gold);}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+  .search{flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;}
+  .search:focus{outline:none;border-color:var(--gold-dim);}
+  select{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;}
+  .add-btn{background:var(--gold);color:#1A1400;border:none;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;}
+  .add-btn:hover{background:#ffca1f;}
+  .btn-secondary{background:none;border:1px solid var(--border);color:var(--text-2);padding:9px 16px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;}
+  .btn-secondary:hover{color:var(--text);border-color:var(--text-2);}
+
+  .potential-legend{display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2);}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:border-color .15s;}
+  .card:hover{border-color:var(--gold-dim);}
+  .card.is-arquivada{opacity:0.55;}
+  .card-top{display:flex;justify-content:space-between;align-items:center;}
+  .cat-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.03em;}
+  .potential-badge{font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:3px 10px;border-radius:20px;font-weight:600;text-transform:uppercase;}
+  .status-badge{font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:3px 10px;border-radius:20px;font-weight:600;text-transform:uppercase;background:var(--feita-bg);color:var(--feita);}
+  .card-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;margin:0;line-height:1.3;}
+  .card-hook{font-size:13.5px;color:var(--text);line-height:1.5;margin:0;padding:10px 12px;background:var(--surface-2);border-left:2px solid var(--gold-dim);border-radius:0 6px 6px 0;}
+  .card-why{font-size:12.5px;color:var(--text-2);line-height:1.5;margin:0;}
+  .card-traffic{font-size:11px;color:var(--traffic);font-family:'JetBrains Mono',monospace;background:var(--traffic-bg);border-radius:8px;padding:6px 10px;}
+  .card-metrics{font-size:11.5px;color:var(--feita);font-family:'JetBrains Mono',monospace;background:var(--feita-bg);border-radius:8px;padding:8px 10px;}
+  .card-foot{display:flex;justify-content:space-between;align-items:center;margin-top:2px;padding-top:10px;border-top:1px solid var(--border);}
+  .card-meta{font-size:11px;color:var(--text-2);font-family:'JetBrains Mono',monospace;}
+  .card-status-actions{display:flex;gap:6px;justify-content:flex-end;}
+  .status-btn{background:var(--surface-2);border:1px solid var(--border);color:var(--text-2);font-size:11px;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;}
+  .status-btn:hover{color:var(--text);border-color:var(--text-2);}
+  .status-btn.done:hover{color:var(--feita);border-color:var(--feita);}
+  .status-btn.archive:hover{color:#e0554f;border-color:#e0554f;}
+  .empty{color:var(--text-2);font-size:13px;padding:40px 0;text-align:center;}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);display:none;align-items:flex-start;justify-content:center;z-index:20;padding:40px 20px;overflow-y:auto;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;max-width:480px;width:100%;}
+  .modal h2{font-family:'Space Grotesk',sans-serif;font-size:18px;margin:0 0 16px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;color:var(--text-2);margin-bottom:6px;}
+  .field input,.field textarea,.field select{width:100%;background:var(--surface-2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13.5px;font-family:'Inter',sans-serif;}
+  .field textarea{resize:vertical;min-height:60px;}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:8px;}
+  .field-row{display:flex;gap:10px;}
+  .field-row .field{flex:1;}
+
+  .idea-modal{max-width:600px;}
+  .idea-modal-head{margin-bottom:18px;}
+  .idea-modal-head h2{margin:6px 0 0;}
+  .idea-why{background:var(--surface-2);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--text);line-height:1.6;margin:14px 0 14px;}
+  .idea-why b{color:var(--gold);display:block;font-family:'Space Grotesk',sans-serif;font-size:12.5px;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.03em;}
+  .idea-traffic{background:var(--traffic-bg);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--text);line-height:1.6;margin-bottom:20px;}
+  .idea-traffic b{color:var(--traffic);display:block;font-family:'Space Grotesk',sans-serif;font-size:12.5px;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.03em;}
+  .idea-traffic .traffic-type{display:inline-block;background:var(--surface);padding:2px 8px;border-radius:12px;font-family:'JetBrains Mono',monospace;font-size:11px;margin-bottom:6px;}
+  .idea-metrics-box{background:var(--feita-bg);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--text);margin-bottom:20px;}
+  .idea-metrics-box b{color:var(--feita);display:block;font-family:'Space Grotesk',sans-serif;font-size:12.5px;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.03em;}
+  .slide-list{display:flex;flex-direction:column;gap:10px;margin-bottom:22px;}
+  .slide-item{display:flex;gap:12px;background:var(--surface-2);border-radius:10px;padding:12px 14px;}
+  .slide-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold-dim);flex-shrink:0;width:22px;padding-top:2px;}
+  .slide-item p{margin:0;font-size:13.5px;line-height:1.55;color:var(--text);}
+  .slide-item .slide-type-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);background:var(--surface);padding:1px 6px;border-radius:10px;margin-bottom:5px;}
+  .idea-modal-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
+
+  .builder-controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px;}
+  .slides-strip{display:flex;flex-wrap:wrap;gap:26px;}
+  .slide-unit{display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;}
+  .slide-unit-toolbar{display:flex;justify-content:space-between;width:100%;align-items:center;}
+  .slide-unit-toolbar span{font-size:11px;color:var(--text-2);font-family:'JetBrains Mono',monospace;}
+  .mini-btn{background:var(--surface-2);border:1px solid var(--border);color:var(--text);font-size:11.5px;padding:6px 10px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;}
+  .mini-btn:hover{border-color:var(--gold-dim);color:var(--gold);}
+  .mini-btn.danger:hover{border-color:#e0554f;color:#e0554f;}
+
+  .frame{width:360px;height:640px;background:#ffffff;border:1px solid #ddd;box-shadow:0 2px 12px rgba(0,0,0,0.08);font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;box-sizing:border-box;padding:24px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .content-card{width:100%;max-height:100%;overflow:hidden;}
+  .f-header{display:flex;gap:10px;align-items:flex-start;}
+  .f-avatar{width:40px;height:40px;border-radius:50%;background:#000 url('data:image/jpeg;base64,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') center/cover;flex-shrink:0;}
+  .f-name-block{display:flex;flex-direction:column;}
+  .f-name-row{display:flex;align-items:center;gap:4px;}
+  .f-name{font-weight:700;font-size:14px;color:#0f1419;outline:none;min-width:20px;}
+  .f-verified{width:15px;height:15px;flex-shrink:0;}
+  .f-handle{font-size:13px;color:#657786;outline:none;min-width:20px;}
+  .f-body{margin-top:12px;font-size:17px;line-height:1.42;color:#0f1419;font-weight:400;outline:none;min-height:24px;}
+  .f-title{margin-top:12px;font-size:22px;line-height:1.22;font-weight:700;color:#0f1419;outline:none;min-height:28px;}
+  .f-imgslot{margin-top:12px;width:100%;height:150px;border-radius:10px;background:#f2f2f2;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;}
+  .f-imgslot.is-empty{border:1.5px dashed #ccc;}
+  .f-imgslot img{width:100%;height:100%;object-fit:cover;}
+  .f-imgslot .ph{font-size:11px;color:#999;text-align:center;padding:0 10px;}
+  .f-compare-row{display:flex;margin-top:14px;gap:8px;}
+  .f-col{flex:1;text-align:center;}
+  .f-col-label{font-size:10px;font-weight:800;letter-spacing:0.3px;color:#0f1419;outline:none;}
+  .f-col-sub{font-size:10px;color:#0f1419;margin-top:2px;outline:none;line-height:1.3;}
+  .f-col .f-imgslot{height:110px;margin-top:8px;}
+  [contenteditable]:hover{background:rgba(29,155,240,0.06);border-radius:4px;}
+  [contenteditable]:focus{background:rgba(29,155,240,0.1);border-radius:4px;outline:none;}
+
+  .empty-builder{color:var(--text-2);font-size:13px;padding:50px 0;text-align:center;max-width:400px;margin:0 auto;line-height:1.6;}
+
+  .roteiro-grid{display:grid;grid-template-columns:1fr;gap:18px;max-width:640px;}
+  .roteiro-field{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+  .roteiro-field label{display:block;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px;}
+  .roteiro-field .hint{font-size:12px;color:var(--text-2);margin-bottom:10px;}
+  .roteiro-preview{background:var(--surface);border:1px solid var(--gold-dim);border-radius:12px;padding:18px 20px;margin-top:22px;max-width:640px;}
+  .roteiro-preview h3{font-family:'Space Grotesk',sans-serif;font-size:15px;margin:0 0 12px;}
+  .roteiro-preview p{font-size:14px;line-height:1.7;color:var(--text);white-space:pre-wrap;margin:0 0 14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Flowlance — marketing</p>
+    <h1>Central de criativos</h1>
+    <p class="sub">Ideias curadas com orientação de tráfego (orgânico/pago, como e quando postar), status de execução e resultado real, construtor visual de carrossel e montador de roteiro.</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="ideias">Banco de ideias</button>
+    <button class="tab-btn" data-tab="carrossel">Montar carrossel</button>
+    <button class="tab-btn" data-tab="roteiro">Montar roteiro</button>
+  </nav>
+
+  <section id="tab-ideias" class="tab-panel active">
+    <div class="guide-box">
+      <h3>Guia rápido de tráfego</h3>
+      <b>Orgânico primeiro, sempre.</b> Só vale pagar tráfego numa ideia que já mostrou sinal de conversão sem pagar nada — pago serve pra ampliar o que já funciona, não pra descobrir o que funciona.<br><br>
+      <b>Quando for testar pago:</b> comece com R$10-15/dia por 1-2 semanas antes de decidir se escala. Gastar os R$600 de uma vez numa ideia não validada é o erro mais comum.<br><br>
+      <b>Melhor horário geral:</b> terça e quarta são os dias mais fortes, com pico entre 17h-21h. Conteúdo educacional rende mais à noite (19h-21h); humor/desabafo, depois das 20h. Evite antes das 10h da manhã e domingo pra alcance orgânico.
+    </div>
+    <div class="banner"><b>Como usar os cards:</b> a barrinha mostra o potencial (verde = alto). Clica pra ver o roteiro completo, o tráfego recomendado e por que a ideia converte. Marca como "Feita" pra registrar resultado real.</div>
+
+    <div class="controls">
+      <input type="text" class="search" id="search" placeholder="Buscar por palavra-chave...">
+      <select id="filterCategory"><option value="">Todas as categorias</option></select>
+      <select id="filterPotential">
+        <option value="">Qualquer potencial</option>
+        <option value="alto">Só potencial alto</option>
+        <option value="medio">Médio</option>
+        <option value="baixo">Baixo</option>
+      </select>
+      <select id="filterStatus">
+        <option value="ativa">Ativas</option>
+        <option value="feita">Feitas</option>
+        <option value="arquivada">Arquivadas</option>
+        <option value="todas">Todas</option>
+      </select>
+      <button class="add-btn" id="openAdd">+ Nova ideia</button>
+    </div>
+
+    <div class="potential-legend">
+      <span class="legend-item"><span class="dot" style="background:var(--alto)"></span>Alto potencial</span>
+      <span class="legend-item"><span class="dot" style="background:var(--medio)"></span>Médio</span>
+      <span class="legend-item"><span class="dot" style="background:var(--baixo)"></span>Baixo</span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="emptyMsg" style="display:none;">Nenhuma ideia encontrada com esse filtro.</p>
+  </section>
+
+  <section id="tab-carrossel" class="tab-panel">
+    <div class="banner"><b>Como usar:</b> clica nos textos pra editar, clica nas caixas cinzas pra subir imagem, e usa "Baixar PNG" em cada slide. Sai sempre em 1080x1920, pronto pro TikTok/Instagram.</div>
+    <div class="builder-controls">
+      <button class="add-btn" id="addTweetSlide">+ Slide estilo tweet</button>
+      <button class="add-btn" id="addCommentSlide">+ Slide só texto</button>
+      <button class="add-btn" id="addComparisonSlide">+ Slide de comparação</button>
+      <button class="btn-secondary" id="clearSlides">Limpar tudo</button>
+    </div>
+    <div class="slides-strip" id="slidesStrip"></div>
+    <p class="empty-builder" id="emptyBuilder">Nenhum slide ainda. Adiciona um slide acima ou vai no Banco de ideias e usa "Montar esse criativo" num card.</p>
+  </section>
+
+  <section id="tab-roteiro" class="tab-panel">
+    <div class="banner"><b>Como usar:</b> escolhe uma frase pronta pra cada parte do vídeo e monta o roteiro completo.</div>
+    <div class="roteiro-grid">
+      <div class="roteiro-field"><label>1. Hook (gancho inicial)</label><p class="hint">Os primeiros 2-3 segundos. Precisa parar o scroll.</p><select id="r-hook"></select></div>
+      <div class="roteiro-field"><label>2. Agitar (a dor)</label><p class="hint">Mostra a consequência chata do problema.</p><select id="r-agitar"></select></div>
+      <div class="roteiro-field"><label>3. Solução</label><p class="hint">Onde o Flowlance entra e resolve.</p><select id="r-solucao"></select></div>
+      <div class="roteiro-field"><label>4. CTA</label><p class="hint">Uma ação só, bem clara.</p><select id="r-cta"></select></div>
+      <button class="add-btn" id="montarRoteiro" style="width:fit-content;">Montar roteiro</button>
+    </div>
+    <div class="roteiro-preview" id="roteiroPreview" style="display:none;">
+      <h3>Seu roteiro:</h3>
+      <p id="roteiroText"></p>
+      <button class="btn-secondary" id="copyRoteiro">Copiar texto</button>
+    </div>
+  </section>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>Nova ideia de criativo</h2>
+    <div class="field"><label>Título</label><input type="text" id="f-title" placeholder="Ex: Confissão do freelancer envergonhado"></div>
+    <div class="field"><label>Categoria</label>
+      <select id="f-category"><option value="Carrossel">Carrossel</option><option value="Vídeo">Vídeo</option><option value="Oferta">Oferta</option><option value="UGC">UGC</option><option value="Estático">Estático/meme</option></select>
+    </div>
+    <div class="field"><label>Potencial de conversão</label>
+      <select id="f-potential"><option value="alto">Alto</option><option value="medio">Médio</option><option value="baixo">Baixo</option></select>
+    </div>
+    <div class="field"><label>Por que converte</label><textarea id="f-why" placeholder="Explique o raciocínio por trás dessa ideia, em 1-2 frases"></textarea></div>
+    <div class="field"><label>Tráfego recomendado (opcional)</label><input type="text" id="f-traffic-how" placeholder="Ex: Orgânico primeiro, terça 17h-21h"></div>
+    <div class="field"><label>Passos / roteiro (um por linha, na ordem)</label><textarea id="f-slides" style="min-height:120px;" placeholder="Hook...&#10;Agitar...&#10;Solução...&#10;CTA..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="cancelAdd">Cancelar</button>
+      <button class="add-btn" id="saveIdea">Salvar ideia</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="metricsModalOverlay">
+  <div class="modal">
+    <h2>Marcar como feita</h2>
+    <p style="font-size:12.5px;color:var(--text-2);margin-top:-8px;margin-bottom:16px;">Registrar resultado é opcional, mas ajuda a saber o que realmente funciona.</p>
+    <div class="field-row">
+      <div class="field"><label>Visualizações</label><input type="number" id="m-views" placeholder="0"></div>
+      <div class="field"><label>Comentários</label><input type="number" id="m-comments" placeholder="0"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Cliques no link</label><input type="number" id="m-clicks" placeholder="0"></div>
+      <div class="field"><label>Trials/assinaturas</label><input type="number" id="m-trials" placeholder="0"></div>
+    </div>
+    <div class="field"><label>Nota rápida (opcional)</label><textarea id="m-note" placeholder="Ex: performou melhor que o esperado"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="cancelMetrics">Cancelar</button>
+      <button class="add-btn" id="saveMetrics">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="ideaModalOverlay">
+  <div class="modal idea-modal" id="ideaModalContent"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+/* Fallback: fora do ambiente Claude (ex: hospedado na Vercel), window.storage não existe.
+   Essa camada recria a mesma API usando localStorage do navegador, pra ferramenta
+   continuar funcionando sozinha. Diferença importante: localStorage é por navegador/
+   dispositivo — não é mais compartilhado automaticamente entre você e seus sócios
+   como era dentro do Claude. */
+if(typeof window.storage === 'undefined'){
+  window.storage = {
+    get: async (key) => {
+      const raw = localStorage.getItem(key);
+      if(raw === null) throw new Error('not found');
+      return { key, value: raw, shared: false };
+    },
+    set: async (key, value) => {
+      localStorage.setItem(key, value);
+      return { key, value, shared: false };
+    },
+    delete: async (key) => {
+      localStorage.removeItem(key);
+      return { key, deleted: true, shared: false };
+    },
+    list: async (prefix) => {
+      const keys = Object.keys(localStorage).filter(k => !prefix || k.startsWith(prefix));
+      return { keys, prefix, shared: false };
+    }
+  };
+}
+
+const IDEAS_KEY = 'flowlance_ideias_v6';
+const SLIDES_KEY = 'flowlance_slides_v2';
+const potentialRank = {alto:3, medio:2, baixo:1};
+const VERIFIED_SVG = '<svg class="f-verified" viewBox="0 0 22 22" fill="#1D9BF0"><path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568-.54.354-.972.853-1.245 1.44-.607-.223-1.264-.27-1.897-.14-.634.132-1.218.437-1.687.882-.445.469-.75 1.053-.882 1.687-.13.633-.083 1.29.14 1.897-.586.274-1.084.706-1.438 1.246-.354.541-.552 1.17-.57 1.816.018.646.216 1.276.57 1.817.354.54.852.972 1.438 1.245-.223.607-.27 1.264-.14 1.897.132.634.437 1.218.882 1.687.469.445 1.053.75 1.687.882.633.13 1.29.083 1.897-.14.274.587.705 1.086 1.245 1.44.54.354 1.167.551 1.813.568.646-.017 1.276-.214 1.816-.568.54-.354.972-.853 1.245-1.44.607.223 1.264.27 1.897.14.634-.132 1.217-.437 1.687-.882.445-.469.75-1.053.882-1.687.13-.633.082-1.29-.14-1.897.586-.273 1.084-.705 1.438-1.245.354-.54.552-1.17.57-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z"/></svg>';
+
+/* ===================== SEED — IDEIAS ===================== */
+/* traffic: {type: 'Orgânico' | 'Pago' | 'Ambos', how: string, when: string} */
+const seedIdeas = [
+  {id:'s1', title:'Tudo-em-um: você tá jogando dinheiro no lixo', category:'Carrossel', potential:'alto', status:'ativa', metrics:null,
+    why:'Junta medo de estar atrasado com ancoragem de preço no fechamento. Termina mostrando produto e valor — quem chega até o fim já está pronto pra decidir.',
+    traffic:{type:'Ambos', how:'Posta orgânico primeiro. Se o link tiver bom clique, transforma em anúncio pago começando com R$10-15/dia mirando freelancers.', when:'Terça ou quarta, entre 17h e 21h.'},
+    slides:['Se você é freelancer e ainda usa 5 apps diferentes pra organizar seu trabalho, você tá jogando dinheiro no lixo. Segue o fio 👇','Cada parte do seu trabalho espalhada num app diferente = você vivendo no passado.','Com o Flowlance, você tem tudo isso em um lugar só.','Dashboard completo pra ver seus clientes e quanto você faturou.','Calendário completo, sem ficar combinando horário no zap.','Propostas profissionais de verdade — o tipo que empresa grande manda.','Tudo isso pelo preço de um lanche de fim de semana.','Acesse flowlance.com.br — 7 dias grátis, sem cartão.']},
+  {id:'s7', title:'Utopia dos apps organizados', category:'Carrossel', potential:'alto', status:'ativa', metrics:null,
+    why:'O roteiro mais completo do banco: sonho relatable, prova de cada funcionalidade uma por uma, e o preço só aparece no fim.',
+    traffic:{type:'Ambos', how:'Excelente candidato a virar anúncio pago depois de validado organicamente — é o roteiro mais completo do banco.', when:'Quarta-feira, 17h-21h (melhor dia/horário geral).'},
+    slides:['Você que é freelancer, já imaginou uma utopia onde todos os apps necessários pra se organizar se juntassem em um só?','Pois é, com o Flowlance isso é muito possível, por um preço muito justo. Ele vai estar no último slide.','Aqui você tem um app completo pra analisar entradas e saídas, sem depender do app do banco ou de um Google Planilhas em desordem','Também tem propostas mais profissionais que muitas empresas grandes (já deu de passar vergonha com mensagem pelo WhatsApp, né?)','Um calendário completo pra você e pra seu cliente, sem depender de nada externo','Ainda tem como você criar uma equipe e organizar tudo junto','Parece sonho, não é? Mas relaxa, é só o Flowlance chegando com tudo no mercado','Você deve estar se perguntando o valor, e como prometido, aí vai...','Nossos planos começam em incríveis R$49,90!! Mas corre, que quando novas features lançarem esse preço pode mudar']},
+  {id:'s10', title:'Antes e depois da proposta', category:'Carrossel', potential:'alto', status:'ativa', metrics:null,
+    why:'Comparação visual direta é processada mais rápido que texto. Formato de carrossel/slideshow é considerado, em benchmarks de 2026, tão eficaz quanto vídeo pra esse tipo de contraste — e muito mais barato de produzir.',
+    traffic:{type:'Ambos', how:'Formato de contraste funciona bem orgânico e pago. Testa pago pequeno assim que tiver 2-3 dias de dado orgânico.', when:'Terça ou quinta, 13h-17h.'},
+    slides:['Isso ou isso? A diferença entre parecer amador e parecer empresa grande',{type:'comparison', title:'Qual proposta você mandaria pro seu cliente?', colALabel:'ANTES', colASub:'print de texto corrido no WhatsApp', colBLabel:'DEPOIS', colBSub:'link com proposta formatada do Flowlance'},'7 dias grátis pra virar a chave. flowlance.com.br']},
+  {id:'s6', title:'Enquanto você manda PDF, seu concorrente manda link', category:'Carrossel', potential:'alto', status:'ativa', metrics:null,
+    why:'Medo de ficar pra trás em relação a um concorrente direto ativa urgência de agir muito mais forte que um medo genérico.',
+    traffic:{type:'Ambos', how:'Bom teste de anúncio pago depois de validado — a comparação direta costuma ter CTR mais alto.', when:'Terça ou quarta, 17h-21h.'},
+    slides:['Enquanto você ainda manda proposta em PDF, seu concorrente já manda link e recebe o pagamento na hora',{type:'comparison', title:'Quem parece mais preparado?', colALabel:'VOCÊ', colASub:'PDF anexado, espera transferência manual', colBLabel:'SEU CONCORRENTE', colBSub:'link, aceite e pagamento no mesmo instante'},'7 dias grátis, sem cartão. flowlance.com.br']},
+  {id:'s23', title:'O que muda quando você parece profissional', category:'Carrossel', potential:'alto', status:'ativa', metrics:null,
+    why:'Foca no status e respeito ganho — gatilho aspiracional é mais forte que um gatilho puramente prático.',
+    traffic:{type:'Orgânico', how:'Deixa esse rodar orgânico primeiro — é mais sutil, então precisa de contexto de audiência que já te conhece um pouco.', when:'Quinta, 17h-20h.'},
+    slides:['Isso aqui mudou como os clientes me tratam depois que troquei de proposta',{type:'comparison', title:'O mesmo freelancer, duas percepções diferentes', colALabel:'ANTES', colASub:'cliente questionando prazo e preço o tempo todo', colBLabel:'DEPOIS', colBSub:'cliente aceita e confia no processo desde o início'},'A diferença não foi o trabalho. Foi a apresentação. Flowlance, link na bio.']},
+  {id:'s13', title:'O preço de um lanche de fim de semana', category:'Carrossel', potential:'alto', status:'ativa', metrics:null,
+    why:'Ancorar o preço em algo pequeno e cotidiano faz o valor parecer insignificante perto do benefício.',
+    traffic:{type:'Orgânico', how:'Bom conteúdo de fechamento logo depois de 2-3 posts que já aqueceram a audiência com a dor.', when:'Terça ou quarta, 17h-21h.'},
+    slides:['Quanto custa parecer profissional pro seu cliente? Menos do que você imagina.','Dashboard, calendário, propostas com cobrança automática, tudo incluso.','Tudo isso pelo preço de um lanche de fim de semana. R$49,90.','7 dias grátis antes de pagar qualquer coisa. flowlance.com.br']},
+  {id:'s3', title:'Opinião polêmica sobre WhatsApp', category:'Carrossel', potential:'medio', status:'ativa', metrics:null,
+    why:'Discordância gera comentário — o sinal que mais ajuda uma conta nova a ganhar alcance.',
+    traffic:{type:'Orgânico', how:'Não vale pagar tráfego nisso — o valor está no comentário gratuito, não em clique direto.', when:'Terça, 16h-21h.'},
+    slides:['Freelancer que ainda manda proposta pelo WhatsApp não tá sendo humilde. Tá deixando dinheiro na mesa.','Concorda ou discorda? comenta aí 👇','Proposta feita com pressa passa imagem de amador — mesmo que seu trabalho seja excelente.',{type:'comparison', title:'Isso ou isso?', colALabel:'PROPOSTA NO WHATS', colASub:'texto corrido, sem formatação', colBLabel:'PROPOSTA FLOWLANCE', colBSub:'link profissional, aceite com 1 clique'},'Testa grátis: flowlance.com.br']},
+  {id:'s2', title:'Confissão da cobrança constrangedora', category:'Carrossel', potential:'medio', status:'ativa', metrics:null,
+    why:'Vergonha alheia gera comentário e compartilhamento. Aquece audiência pro conteúdo de conversão.',
+    traffic:{type:'Orgânico', how:'Conteúdo de aquecimento — não precisa (nem deve) virar anúncio pago.', when:'Quinta ou sexta, 17h-20h.'},
+    slides:['Se você já mandou "oi! lembrando do pagamento 🙏" três vezes pro mesmo cliente, esse vídeo é pra você','print fictício de conversa: "oi, lembrando do pagamento 🙏" repetida 2-3 vezes num intervalo de dias','A gente sabe que é constrangedor. E não precisa ser assim.','Com o Flowlance a cobrança sai sozinha, assim que o cliente aceita a proposta.','Link na bio. 7 dias grátis, sem cartão.']},
+  {id:'s4', title:'De R$50 a R$500 sem mudar o portfólio', category:'Carrossel', potential:'medio', status:'ativa', metrics:null,
+    why:'Loop aberto prende o dedo no carrossel até o último slide — o algoritmo lê isso como conteúdo de qualidade.',
+    traffic:{type:'Orgânico', how:'Formato de retenção — deixa rodar orgânico pra ganhar tempo de visualização.', when:'Terça ou quinta, tarde.'},
+    slides:['Como esse freelancer foi de R$50 pra R$500 por projeto sem mudar o portfólio','Ele não mudou uma linha do trabalho que entregava.','O que mudou foi como ele apresentava a proposta pro cliente.','Ele parou de mandar proposta solta no zap e passou a mandar link profissional.','Isso é o Flowlance. Link na bio.']},
+  {id:'s25', title:'As 3 perguntas antes de assinar', category:'Carrossel', potential:'medio', status:'ativa', metrics:null,
+    why:'Responde objeções reais antes que elas impeçam o trial.',
+    traffic:{type:'Orgânico', how:'Fixa esse nos destaques do perfil também — funciona como FAQ permanente.', when:'Sem horário crítico, mas evita domingo.'},
+    slides:['As 3 perguntas que todo mundo faz antes de assinar o Flowlance','"Preciso saber mexer em tecnologia?" Não — se você usa WhatsApp, você usa o Flowlance.','"Meus dados de cliente ficam seguros?" Sim, e você pode exportar quando quiser.','"E se eu não gostar?" 7 dias grátis, sem cartão, sem pegadinha.','Testa sem compromisso: flowlance.com.br']},
+
+  {id:'adv1', title:'Dica real de produtividade (produto quase invisível)', category:'Vídeo', potential:'alto', status:'ativa', metrics:null,
+    why:'Padrão validado em 2026: conteúdo roteirizado que já "avisa" que é propaganda no primeiro meio segundo perde força. O que performa melhor agora é dar valor genuíno primeiro e mencionar o produto de forma quase incidental no final — a pessoa sente que aprendeu algo, não que foi vendida algo.',
+    traffic:{type:'Orgânico', how:'Não force menção ao produto — se parecer anúncio nos primeiros segundos, a pessoa já reconhece o padrão e pula.', when:'Terça a quinta, 19h-21h (conteúdo educacional rende mais à noite).'},
+    slides:['3 formas de nunca mais perder o fio de uma negociação com cliente (sem precisar de app nenhum)','1. Sempre confirma por escrito o que foi combinado, mesmo que a conversa tenha sido por áudio.','2. Define um prazo de resposta pra proposta — isso evita ela morrer esquecida.','3. Separa um horário fixo da semana só pra questões administrativas, não deixa acumular.','(rapidinho, sem forçar) eu uso o Flowlance pra automatizar boa parte disso, mas essas 3 dicas já ajudam sozinhas.']},
+  {id:'adv2', title:'Depoimento real em carrossel (UGC-slideshow)', category:'UGC', potential:'alto', status:'ativa', metrics:null,
+    why:'Pesquisa de 2026 (Emplifi) mostra que posts com UGC convertem cerca de 10x mais que posts sem UGC, e que o formato de carrossel/slideshow com depoimento é um dos mais fáceis de produzir e performa tão bem quanto vídeo — sem precisar filmar nada.',
+    traffic:{type:'Ambos', how:'Depoimento real é o tipo de criativo com melhor retorno como anúncio pago depois de validado — guarda pra transformar em anúncio assim que tiver 1-2 casos reais.', when:'Postar assim que tiver o depoimento pronto; sem horário crítico específico.'},
+    slides:['Print de mensagem real (com permissão) de um usuário elogiando o Flowlance',{type:'comparison', title:'O que ele disse', colALabel:'ANTES DO FLOWLANCE', colASub:'"eu vivia perdendo o controle de quem já tinha pago"', colBLabel:'DEPOIS', colBSub:'"agora eu vejo tudo no dashboard, sem esforço"'},'Depoimento real de um usuário real. Link na bio.']},
+
+  {id:'v3', title:'Breakdown dos planos: qual é pra você', category:'Vídeo', potential:'alto', status:'ativa', metrics:null,
+    why:'Gente na dúvida entre planos às vezes não converte só por não saber qual escolher.',
+    traffic:{type:'Ambos', how:'Bom pra fixar no perfil e reaproveitar como resposta pronta pra quem pergunta nos comentários.', when:'Qualquer dia útil, 17h-21h.'},
+    slides:['Qual plano do Flowlance é pra você? Deixa eu te ajudar a decidir.','Starter (R$49): pra quem tá começando e só precisa organizar proposta e cobrança.','Pro (R$99): pra quem já tem volume e quer o follow-up automático via WhatsApp.','Agência (R$200): pra quem já tem equipe e quer todo mundo na mesma base de clientes.','Começa pelo Starter, dá pra fazer upgrade quando precisar. 7 dias grátis em qualquer plano.']},
+  {id:'v4', title:'Cronômetro: proposta manual vs Flowlance', category:'Vídeo', potential:'alto', status:'ativa', metrics:null,
+    why:'Demonstração concreta com prova de tempo real é mais convincente que qualquer alegação — a pessoa vê a diferença acontecer, sem precisar confiar na sua palavra.',
+    traffic:{type:'Ambos', how:'Prova concreta funciona muito bem como anúncio de conversão — considera testar pago assim que tiver esse vídeo pronto.', when:'Terça ou quarta, 17h-21h.'},
+    slides:['Vou cronometrar: quanto tempo leva pra montar uma proposta do zero no Word/WhatsApp vs no Flowlance?','(cronômetro rodando) montando a proposta manual, formatando, calculando valor... 6 minutos','(cronômetro zerado) mesma proposta no Flowlance, usando um template: 40 segundos','A diferença não é só velocidade — é sobrar tempo pra você trabalhar no que importa.','flowlance.com.br, 7 dias grátis']},
+  {id:'s19', title:'Reação a comentário de seguidor', category:'Vídeo', potential:'alto', status:'ativa', metrics:null,
+    why:'Formato nativo que o TikTok promove ativamente — alcance quase garantido, e parece autêntico, não roteirizado.',
+    traffic:{type:'Orgânico', how:'Só funciona com comentário real — não dá pra fabricar ou pagar por isso.', when:'Assim que o comentário aparecer, idealmente ainda no mesmo dia.'},
+    slides:['Alguém comentou "isso funciona mesmo?" — aqui está a resposta','(fala respondendo) mostra a tela do Flowlance funcionando de verdade, sem cortes','Se você tem dúvida parecida, comenta que eu respondo em vídeo também']},
+  {id:'s18', title:'Calculadora de tempo perdido', category:'Vídeo', potential:'medio', status:'ativa', metrics:null,
+    why:'Números concretos tornam uma dor abstrata em algo mensurável.',
+    traffic:{type:'Orgânico', how:'Conteúdo educacional — funciona bem sem precisar de anúncio.', when:'19h-21h (conteúdo educacional rende mais à noite).'},
+    slides:['Você perde em média 3 horas por semana só organizando cliente em planilha.','Em um mês, são 12 horas. Em um ano, 6 dias inteiros — de graça.','O Flowlance substitui a planilha por um cadastro automático de cliente.','Recupera esse tempo. flowlance.com.br']},
+  {id:'s11', title:'POV: cliente sumiu depois da proposta', category:'Vídeo', potential:'medio', status:'ativa', metrics:null,
+    why:'POV é o formato mais nativo do TikTok — a pessoa se imagina vivendo a cena.',
+    traffic:{type:'Orgânico', how:'Tom de desabafo funciona melhor sem parecer anúncio — mantém orgânico.', when:'Depois das 20h (tom mais leve/entretenimento).'},
+    slides:['POV: você manda a proposta pelo zap, o cliente vê, e some por 4 dias','(cena falada) "vi que ele visualizou, mas nada de resposta..."','(cena falada) "no Flowlance eu saberia na hora se ele abriu e quanto tempo ficou lendo"','Rastreamento em tempo real: você sabe quando o cliente abriu a proposta. Link na bio.']},
+  {id:'v5', title:'Storytime: perdi um cliente pela bagunça', category:'Vídeo', potential:'medio', status:'ativa', metrics:null,
+    why:'Storytelling de erro pessoal cria vulnerabilidade genuína.',
+    traffic:{type:'Orgânico', how:'Vulnerabilidade não combina com anúncio pago — deixa esse só no orgânico.', when:'Noite, depois das 20h.'},
+    slides:['Já perdi um cliente bom só porque ele achou que eu tinha esquecido dele — eu só tinha perdido a mensagem no meio de outras 200 no zap.','Foi o dia que percebi que talento não segura cliente se a organização for ruim.','Foi por isso que passei a usar (e depois criar) uma forma de nunca mais perder isso de vista.','Hoje isso não acontece mais comigo. flowlance.com.br']},
+  {id:'s15', title:'Bastidor: por que criei o Flowlance', category:'Vídeo', potential:'medio', status:'ativa', metrics:null,
+    why:'Histórias de fundador humanizam a marca — confiança aumenta quando existe uma pessoa real por trás.',
+    traffic:{type:'Orgânico', how:'Fixa no perfil — é conteúdo institucional, não precisa de push de tráfego.', when:'Sem horário crítico.'},
+    slides:['Cansei de ver freelancer talentoso perdendo cliente por parecer amador. Foi por isso que criei o Flowlance.','Via gente boa no que fazia perdendo proposta pra concorrente pior, só porque mandava tudo bagunçado no zap.','Não fazia sentido o trabalho ser bom e a apresentação ser o que afundava a venda.','O Flowlance nasceu pra resolver exatamente essa parte.']},
+
+  {id:'o1', title:'Garantia de migração assistida', category:'Oferta', potential:'alto', status:'ativa', metrics:null,
+    why:'Remove o maior medo de trocar de ferramenta: perder tempo migrando pra nada.',
+    traffic:{type:'Ambos', how:'Boa como legenda fixa e também como copy de anúncio de conversão — a garantia reduz risco percebido em qualquer canal.', when:'Sem horário crítico.'},
+    slides:['Teste 7 dias grátis, sem cartão.','Se em 7 dias você não mandar uma proposta mais profissional que o normal do seu WhatsApp, a gente te ajuda a migrar de volta pra planilha — sem ressentimento.','A gente importa seus clientes da planilha pra você. Não precisa digitar nada de novo.','Comenta "migrar" que eu te explico como funciona.']},
+  {id:'o7', title:'Vagas limitadas de acesso antecipado', category:'Oferta', potential:'alto', status:'ativa', metrics:null,
+    why:'Urgência genuína (vocês estão em pré-lançamento de verdade, com capacidade de suporte limitada) é mais crível que contador falso.',
+    traffic:{type:'Orgânico', how:'Urgência real cai melhor como conteúdo autêntico do que como anúncio pago — anúncio pago com esse tom pode soar falso.', when:'Terça ou quarta, 17h-21h.'},
+    slides:['O Flowlance ainda tá em fase inicial — e por isso, só estamos liberando acesso pra um número limitado de freelancers por semana, pra garantir suporte de perto pra cada um.','Se você entrar agora, tem atendimento direto com quem tá construindo o produto — não um chatbot genérico.','Quando a base crescer, isso muda. Aproveita enquanto é assim.','flowlance.com.br — 7 dias grátis, sem cartão.']},
+  {id:'o4', title:'Bônus real por tempo limitado (feature nova)', category:'Oferta', potential:'alto', status:'ativa', metrics:null,
+    why:'Urgência ligada a um evento concreto é muito mais crível do que contador falso.',
+    traffic:{type:'Ambos', how:'Funciona bem tanto orgânico quanto pago, desde que a feature realmente esteja em desenvolvimento — nunca fabricar isso.', when:'Terça a quinta, 17h-21h.'},
+    slides:['Em breve o Flowlance lança emissão automática de nota fiscal.','Os primeiros 20 assinantes a partir de hoje ganham essa feature de graça por 3 meses quando ela sair.','Depois que a lista fechar, quem assinar paga preço normal desde o início.','7 dias grátis, sem cartão. flowlance.com.br']},
+  {id:'o3', title:'Lead magnet: template de proposta grátis', category:'Oferta', potential:'medio', status:'ativa', metrics:null,
+    why:'Nem todo mundo está pronto pro trial no primeiro contato. Um material grátis de baixo compromisso captura o interesse.',
+    traffic:{type:'Orgânico', how:'Fixa o link do template na bio — funciona como captura constante, sem precisar de push pago.', when:'Sem horário crítico.'},
+    slides:['Criei um template de proposta profissional gratuito pra freelancer.','Não precisa ser cliente Flowlance pra usar — é só baixar e usar do seu jeito.','Se quiser automatizar o resto (cobrança, agenda, dashboard), o Flowlance faz isso.','Link do template gratuito na bio.']},
+  {id:'o2', title:'Programa de indicação: 1 mês grátis', category:'Oferta', potential:'alto', status:'ativa', metrics:null,
+    why:'Transforma cada cliente satisfeito num canal de aquisição gratuito.',
+    traffic:{type:'Orgânico', how:'Isso é boca a boca via seus próprios usuários — não é conteúdo de feed nem anúncio, é mensagem direta pra base de clientes.', when:'Assim que tiver base mínima de usuários ativos.'},
+    slides:['Você usa o Flowlance e curte? Indica pra outro freelancer.','Se ele assinar qualquer plano, vocês dois ganham 1 mês grátis.','Sem limite de indicações — quanto mais freelancer você ajudar a se organizar, mais tempo grátis você acumula.','Manda o link de indicação (dentro do painel) pra quem você confia.']},
+  {id:'o6', title:'Script de DM fria pra outreach direto', category:'Oferta', potential:'medio', status:'ativa', metrics:null,
+    why:'Outreach direto pra freelancers que já reclamaram publicamente tem taxa de resposta mais alta que anúncio frio, por ser personalizado.',
+    traffic:{type:'Orgânico', how:'Isso é ação manual, não postagem — mande 5-10 por dia pra pessoas que genuinamente reclamaram da dor publicamente, não em massa.', when:'Qualquer horário comercial, evite fim de semana.'},
+    slides:['Oi [nome], vi seu comentário sobre [dor específica que a pessoa mencionou publicamente].','Criei um app pra resolver exatamente isso — propostas com link, cobrança automática e dashboard financeiro.','Não é pitch de venda, é 7 dias grátis sem cartão pra você testar e ver se ajuda de verdade.','Se quiser, te mando o link. Sem compromisso.']},
+
+  {id:'u1', title:'Depoimento em troca de meses grátis', category:'UGC', potential:'alto', status:'ativa', metrics:null,
+    why:'Depoimento real de um usuário de verdade vale mais que qualquer copy bem escrita.',
+    traffic:{type:'Orgânico', how:'Depois de gravado, esse é o melhor candidato do banco pra virar anúncio pago — UGC real converte, em média, cerca de 10x mais que conteúdo sem UGC segundo benchmarks de 2026.', when:'Assim que o vídeo estiver pronto.'},
+    slides:['Pedido direto pros primeiros usuários: grava um vídeo de 30s contando como o Flowlance te ajudou.','Em troca, você ganha 2 meses grátis na assinatura.','O vídeo vai ser usado (com sua permissão) nas redes do Flowlance.','Comenta ou manda DM se topar participar.']},
+
+  {id:'e2', title:'Print borrado de faturamento', category:'Estático', potential:'medio', status:'ativa', metrics:null,
+    why:'Mostrar um número borrado ativa curiosidade e sugere prova social de resultado.',
+    traffic:{type:'Orgânico', how:'Post rápido de manutenção de presença — não precisa de push.', when:'Sem horário crítico.'},
+    slides:['Print do dashboard do Flowlance com o valor de faturamento borrado.','Legenda: "não vou mostrar quanto faturei esse mês, mas o Flowlance que me ajudou a organizar isso tudo"']}
+];
+
+/* ===================== SEED — FRASES DE ROTEIRO ===================== */
+const roteiroLib = {
+  hook: ["Se você é freelancer e ainda usa 5 apps diferentes pra organizar seu trabalho, você tá jogando dinheiro no lixo.","POV: você manda a proposta pelo zap, o cliente vê, e some por 4 dias.","Freelancer que ainda manda proposta pelo WhatsApp não tá sendo humilde. Tá deixando dinheiro na mesa.","Se você já mandou 'oi! lembrando do pagamento 🙏' três vezes pro mesmo cliente, esse vídeo é pra você.","Já imaginou uma utopia onde todos os apps necessários pra se organizar se juntassem em um só?"],
+  agitar: ["Cada parte do seu trabalho espalhada num app diferente = você vivendo no passado.","A gente sabe que é constrangedor. E não precisa ser assim.","Proposta feita com pressa passa imagem de amador — mesmo que seu trabalho seja excelente.","Você perde em média 3 horas por semana só organizando cliente em planilha. Em um ano, são 6 dias inteiros.","Enquanto você ainda manda proposta em PDF, seu concorrente já manda link e recebe o pagamento na hora."],
+  solucao: ["Com o Flowlance, você tem tudo isso em um lugar só: dashboard, calendário, propostas e cobrança automática.","Com o Flowlance a cobrança sai sozinha. Sem lembrete manual, sem climão.","Você manda um link. O cliente vê tudo bonitinho, aceita com um clique, e o pagamento já é gerado na hora.","Propostas profissionais de verdade — o tipo que empresa grande manda.","Tudo isso pelo preço de um lanche de fim de semana."],
+  cta: ["Acesse flowlance.com.br — 7 dias grátis, sem cartão.","Link na bio. Testa grátis agora.","Manda 'proposta' no direct e eu te explico como começar.","7 dias grátis, sem cartão. Comenta 'eu quero' que eu te mando o link."]
+};
+
+/* ===================== IDEIAS: estado e persistência ===================== */
+let ideas = [];
+let pendingStatusIdeaId = null;
+
+async function loadIdeas(){
+  try{
+    const result = await window.storage.get(IDEAS_KEY, true);
+    ideas = result ? JSON.parse(result.value) : seedIdeas;
+  }catch(e){
+    ideas = seedIdeas;
+    try{ await window.storage.set(IDEAS_KEY, JSON.stringify(seedIdeas), true); }catch(e2){}
+  }
+  populateFilters();
+  renderIdeas();
+}
+async function persistIdeas(){
+  try{ await window.storage.set(IDEAS_KEY, JSON.stringify(ideas), true); }catch(e){ console.error('Erro ao salvar ideias', e); }
+}
+function populateFilters(){
+  const catSel = document.getElementById('filterCategory');
+  const cats = [...new Set(ideas.map(i=>i.category))].sort();
+  catSel.innerHTML = '<option value="">Todas as categorias</option>' + cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+}
+function potColor(p){
+  if(p==='alto') return {c:'var(--alto)', bg:'var(--alto-bg)', label:'Alto'};
+  if(p==='medio') return {c:'var(--medio)', bg:'var(--medio-bg)', label:'Médio'};
+  return {c:'var(--baixo)', bg:'var(--baixo-bg)', label:'Baixo'};
+}
+function firstSlideText(idea){
+  const first = idea.slides[0];
+  return typeof first === 'string' ? first : first.title;
+}
+function renderIdeas(){
+  const search = document.getElementById('search').value.toLowerCase();
+  const fCategory = document.getElementById('filterCategory').value;
+  const fPotential = document.getElementById('filterPotential').value;
+  const fStatus = document.getElementById('filterStatus').value;
+
+  let filtered = ideas.filter(i=>{
+    const haystack = (i.title + firstSlideText(i) + i.category + i.why).toLowerCase();
+    const matchesSearch = !search || haystack.includes(search);
+    const matchesCategory = !fCategory || i.category===fCategory;
+    const matchesPotential = !fPotential || i.potential===fPotential;
+    const matchesStatus = fStatus==='todas' || (i.status||'ativa')===fStatus;
+    return matchesSearch && matchesCategory && matchesPotential && matchesStatus;
+  });
+  filtered.sort((a,b)=> (potentialRank[b.potential]||0) - (potentialRank[a.potential]||0));
+
+  const grid = document.getElementById('grid');
+  const emptyMsg = document.getElementById('emptyMsg');
+  grid.innerHTML = '';
+  if(filtered.length===0){ emptyMsg.style.display='block'; return; }
+  emptyMsg.style.display='none';
+
+  filtered.forEach(i=>{
+    const pc = potColor(i.potential);
+    const status = i.status || 'ativa';
+    const card = document.createElement('div');
+    card.className = 'card' + (status==='arquivada' ? ' is-arquivada' : '');
+    card.style.borderLeft = `3px solid ${pc.c}`;
+
+    let metricsHtml = '';
+    if(status==='feita' && i.metrics){
+      const m = i.metrics;
+      const parts = [];
+      if(m.views) parts.push(`${m.views} views`);
+      if(m.comments) parts.push(`${m.comments} comentários`);
+      if(m.clicks) parts.push(`${m.clicks} cliques`);
+      if(m.trials) parts.push(`${m.trials} trials`);
+      metricsHtml = `<div class="card-metrics">${parts.length ? parts.join(' · ') : 'Marcada como feita'}${m.note ? '<br>'+m.note : ''}</div>`;
+    }
+
+    let statusActionsHtml = '';
+    if(status==='ativa'){
+      statusActionsHtml = `<button class="status-btn done" data-done="${i.id}">✓ Feita</button><button class="status-btn archive" data-archive="${i.id}">Arquivar</button>`;
+    } else {
+      statusActionsHtml = `<button class="status-btn" data-reactivate="${i.id}">Reativar</button>`;
+    }
+
+    const trafficHtml = i.traffic ? `<div class="card-traffic">${i.traffic.type} · ${i.traffic.when}</div>` : '';
+
+    card.innerHTML = `
+      <div class="card-top">
+        <span class="cat-label">${i.category}</span>
+        ${status==='feita' ? `<span class="status-badge">Feita</span>` : `<span class="potential-badge" style="background:${pc.bg};color:${pc.c}">${pc.label}</span>`}
+      </div>
+      <p class="card-title">${i.title}</p>
+      <p class="card-hook">"${firstSlideText(i)}"</p>
+      ${metricsHtml}
+      ${trafficHtml}
+      <p class="card-why">${i.why}</p>
+      <div class="card-foot">
+        <span class="card-meta">${i.slides.length} passos</span>
+        <button class="del-btn" data-id="${i.id}" style="background:none;border:none;color:var(--text-2);cursor:pointer;font-size:11px;font-family:'JetBrains Mono',monospace;">remover</button>
+      </div>
+      <div class="card-status-actions">${statusActionsHtml}</div>
+    `;
+    card.addEventListener('click', (e)=>{
+      if(e.target.closest('.del-btn') || e.target.closest('.status-btn')) return;
+      openIdeaModal(i.id);
+    });
+    card.querySelector('.del-btn').addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      ideas = ideas.filter(x=>x.id!==i.id);
+      await persistIdeas(); populateFilters(); renderIdeas();
+    });
+    const doneBtn = card.querySelector('[data-done]');
+    if(doneBtn) doneBtn.addEventListener('click', (e)=>{ e.stopPropagation(); openMetricsModal(i.id); });
+    const archiveBtn = card.querySelector('[data-archive]');
+    if(archiveBtn) archiveBtn.addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      i.status = 'arquivada';
+      await persistIdeas(); renderIdeas();
+    });
+    const reactivateBtn = card.querySelector('[data-reactivate]');
+    if(reactivateBtn) reactivateBtn.addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      i.status = 'ativa';
+      await persistIdeas(); renderIdeas();
+    });
+    grid.appendChild(card);
+  });
+}
+document.getElementById('search').addEventListener('input', renderIdeas);
+document.getElementById('filterCategory').addEventListener('change', renderIdeas);
+document.getElementById('filterPotential').addEventListener('change', renderIdeas);
+document.getElementById('filterStatus').addEventListener('change', renderIdeas);
+
+/* modal nova ideia */
+const overlay = document.getElementById('modalOverlay');
+document.getElementById('openAdd').addEventListener('click', ()=> overlay.classList.add('open'));
+document.getElementById('cancelAdd').addEventListener('click', ()=> overlay.classList.remove('open'));
+document.getElementById('saveIdea').addEventListener('click', async ()=>{
+  const title = document.getElementById('f-title').value.trim();
+  const slidesRaw = document.getElementById('f-slides').value.trim();
+  if(!title || !slidesRaw){ alert('Preenche pelo menos título e os passos.'); return; }
+  const slidesArr = slidesRaw.split('\n').map(s=>s.trim()).filter(Boolean);
+  ideas.unshift({
+    id: 'u'+Date.now(), title,
+    category: document.getElementById('f-category').value,
+    potential: document.getElementById('f-potential').value,
+    status: 'ativa', metrics: null,
+    why: document.getElementById('f-why').value.trim() || 'Sem explicação adicionada ainda.',
+    traffic: { type:'Orgânico', how: document.getElementById('f-traffic-how').value.trim() || 'Testa orgânico primeiro.', when:'A definir' },
+    slides: slidesArr
+  });
+  await persistIdeas(); populateFilters(); renderIdeas();
+  overlay.classList.remove('open');
+  ['f-title','f-why','f-traffic-how','f-slides'].forEach(id=> document.getElementById(id).value='');
+});
+
+/* modal métricas (marcar como feita) */
+const metricsOverlay = document.getElementById('metricsModalOverlay');
+function openMetricsModal(ideaId){
+  pendingStatusIdeaId = ideaId;
+  ['m-views','m-comments','m-clicks','m-trials','m-note'].forEach(id=> document.getElementById(id).value='');
+  metricsOverlay.classList.add('open');
+}
+document.getElementById('cancelMetrics').addEventListener('click', ()=>{ metricsOverlay.classList.remove('open'); pendingStatusIdeaId=null; });
+document.getElementById('saveMetrics').addEventListener('click', async ()=>{
+  const idea = ideas.find(i=>i.id===pendingStatusIdeaId);
+  if(!idea){ metricsOverlay.classList.remove('open'); return; }
+  idea.status = 'feita';
+  idea.metrics = {
+    views: parseInt(document.getElementById('m-views').value) || null,
+    comments: parseInt(document.getElementById('m-comments').value) || null,
+    clicks: parseInt(document.getElementById('m-clicks').value) || null,
+    trials: parseInt(document.getElementById('m-trials').value) || null,
+    note: document.getElementById('m-note').value.trim() || null
+  };
+  await persistIdeas();
+  metricsOverlay.classList.remove('open');
+  pendingStatusIdeaId = null;
+  renderIdeas();
+});
+
+/* modal ideia completa */
+const ideaModalOverlay = document.getElementById('ideaModalOverlay');
+function openIdeaModal(ideaId){
+  const idea = ideas.find(i=>i.id===ideaId);
+  if(!idea) return;
+  const pc = potColor(idea.potential);
+  const status = idea.status || 'ativa';
+  const slidesHtml = idea.slides.map((s, idx)=>{
+    if(typeof s === 'string'){
+      return `<div class="slide-item"><span class="slide-num">${idx+1}</span><p>${s}</p></div>`;
+    }else{
+      return `<div class="slide-item"><span class="slide-num">${idx+1}</span><div><span class="slide-type-tag">comparação</span><p><b>${s.title}</b><br>${s.colALabel}: ${s.colASub} &nbsp;|&nbsp; ${s.colBLabel}: ${s.colBSub}</p></div></div>`;
+    }
+  }).join('');
+
+  let metricsBoxHtml = '';
+  if(status==='feita' && idea.metrics){
+    const m = idea.metrics;
+    const parts = [];
+    if(m.views) parts.push(`${m.views} visualizações`);
+    if(m.comments) parts.push(`${m.comments} comentários`);
+    if(m.clicks) parts.push(`${m.clicks} cliques no link`);
+    if(m.trials) parts.push(`${m.trials} trials/assinaturas`);
+    metricsBoxHtml = `<div class="idea-metrics-box"><b>Resultado real</b>${parts.length ? parts.join(' · ') : 'Sem números registrados ainda'}${m.note ? '<br><br>'+m.note : ''}</div>`;
+  }
+
+  const trafficBoxHtml = idea.traffic ? `<div class="idea-traffic"><b>Tráfego recomendado</b><span class="traffic-type">${idea.traffic.type}</span><br>${idea.traffic.how}<br><br><b style="margin-top:8px;">Melhor horário</b>${idea.traffic.when}</div>` : '';
+
+  document.getElementById('ideaModalContent').innerHTML = `
+    <div class="idea-modal-head">
+      <div class="card-top" style="margin-bottom:8px;">
+        <span class="cat-label">${idea.category}</span>
+        ${status==='feita' ? `<span class="status-badge">Feita</span>` : `<span class="potential-badge" style="background:${pc.bg};color:${pc.c}">${pc.label} potencial</span>`}
+      </div>
+      <h2>${idea.title}</h2>
+    </div>
+    ${metricsBoxHtml}
+    <div class="idea-why"><b>Por que converte</b>${idea.why}</div>
+    ${trafficBoxHtml}
+    <div class="slide-list">${slidesHtml}</div>
+    <div class="idea-modal-actions">
+      <button class="btn-secondary" id="closeIdeaModal">Fechar</button>
+      <button class="btn-secondary" id="copyIdeaBtn">Copiar roteiro completo</button>
+      <button class="add-btn" id="useIdeaBtn">Montar esse criativo →</button>
+    </div>
+  `;
+  ideaModalOverlay.classList.add('open');
+  document.getElementById('closeIdeaModal').addEventListener('click', ()=> ideaModalOverlay.classList.remove('open'));
+  document.getElementById('useIdeaBtn').addEventListener('click', ()=>{ useIdeaAsSlides(idea); ideaModalOverlay.classList.remove('open'); });
+  document.getElementById('copyIdeaBtn').addEventListener('click', ()=>{
+    const text = idea.slides.map((s, idx)=> `${idx+1}. ${typeof s==='string' ? s : s.title+' ('+s.colALabel+': '+s.colASub+' vs '+s.colBLabel+': '+s.colBSub+')'}`).join('\n');
+    navigator.clipboard.writeText(text).then(()=>{
+      const btn = document.getElementById('copyIdeaBtn');
+      const original = btn.innerText;
+      btn.innerText = 'Copiado!';
+      setTimeout(()=> btn.innerText = original, 1500);
+    });
+  });
+}
+
+/* ===================== TABS ===================== */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.getAttribute('data-tab')).classList.add('active');
+  });
+});
+function goToTab(name){ document.querySelector(`.tab-btn[data-tab="${name}"]`).click(); }
+
+/* ===================== CARROSSEL BUILDER ===================== */
+/* Imagens ficam em chaves de storage separadas (uma por slide/slot) pra nunca
+   estourar o limite de tamanho do pacote principal de slides. */
+let slides = [];
+
+function imgKey(slideId, slot){ return `flowlance_img_${slideId}_${slot}`; }
+
+async function loadSlides(){
+  try{
+    const result = await window.storage.get(SLIDES_KEY, true);
+    slides = result ? JSON.parse(result.value) : [];
+  }catch(e){ slides = []; }
+  await loadSlideImages();
+  renderSlides();
+}
+async function loadSlideImages(){
+  for(const s of slides){
+    try{ const r = await window.storage.get(imgKey(s.id,'img'), true); if(r) s.img = r.value; }catch(e){}
+    try{ const r = await window.storage.get(imgKey(s.id,'colA'), true); if(r) s.colAImg = r.value; }catch(e){}
+    try{ const r = await window.storage.get(imgKey(s.id,'colB'), true); if(r) s.colBImg = r.value; }catch(e){}
+  }
+}
+async function persistSlides(){
+  try{
+    const slim = slides.map(s=>{
+      const copy = Object.assign({}, s);
+      delete copy.img; delete copy.colAImg; delete copy.colBImg;
+      return copy;
+    });
+    await window.storage.set(SLIDES_KEY, JSON.stringify(slim), true);
+  }catch(e){
+    console.error('Erro ao salvar slides', e);
+    showSaveWarning();
+  }
+}
+let saveWarningTimer = null;
+function showSaveWarning(){
+  let el = document.getElementById('saveWarning');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'saveWarning';
+    el.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#3a1c14;color:#F2765A;border:1px solid #F2765A;padding:10px 18px;border-radius:8px;font-size:12.5px;font-family:Inter,sans-serif;z-index:50;max-width:90vw;text-align:center;';
+    document.body.appendChild(el);
+  }
+  el.innerText = 'Não deu pra salvar automaticamente agora. O slide continua aqui nessa sessão — baixa o PNG antes de fechar a aba, por garantia.';
+  el.style.display = 'block';
+  clearTimeout(saveWarningTimer);
+  saveWarningTimer = setTimeout(()=>{ el.style.display='none'; }, 6000);
+}
+async function saveSlideImage(slideId, slot, dataUrl){
+  try{
+    await window.storage.set(imgKey(slideId, slot), dataUrl, true);
+    return true;
+  }catch(e){
+    console.error('Erro ao salvar imagem', e);
+    showSaveWarning();
+    return false;
+  }
+}
+function resizeImage(file, maxDim, quality){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = (evt)=>{
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = ()=>{
+        let { width, height } = img;
+        if(width > maxDim || height > maxDim){
+          if(width > height){ height = Math.round(height * (maxDim/width)); width = maxDim; }
+          else{ width = Math.round(width * (maxDim/height)); height = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function newTweetSlide(prefill){
+  return Object.assign({id:'sl'+Date.now()+Math.random().toString(16).slice(2), type:'tweet', name:'Flowlance', handle:'@flowlanceapp', text:'Escreva aqui o texto do seu post...', img:null}, prefill||{});
+}
+function newCommentSlide(prefill){
+  return Object.assign({id:'sl'+Date.now()+Math.random().toString(16).slice(2), type:'comment', name:'Flowlance', handle:'@flowlanceapp', text:'Escreva aqui o texto do seu post...'}, prefill||{});
+}
+function newComparisonSlide(prefill){
+  return Object.assign({id:'sl'+Date.now()+Math.random().toString(16).slice(2), type:'comparison', name:'Flowlance', handle:'@flowlanceapp', title:'Escreva aqui o título chamativo...', colALabel:'ANTES', colASub:'detalhe da opção A', colAImg:null, colBLabel:'DEPOIS', colBSub:'detalhe da opção B', colBImg:null}, prefill||{});
+}
+function useIdeaAsSlides(idea){
+  const newSlides = idea.slides.map(s=>{
+    if(typeof s === 'string'){ return newTweetSlide({text: s}); }
+    return newComparisonSlide({title: s.title, colALabel: s.colALabel, colASub: s.colASub, colBLabel: s.colBLabel, colBSub: s.colBSub});
+  });
+  slides = slides.concat(newSlides);
+  persistSlides();
+  renderSlides();
+  goToTab('carrossel');
+}
+
+document.getElementById('addTweetSlide').addEventListener('click', ()=>{ slides.push(newTweetSlide()); persistSlides(); renderSlides(); });
+document.getElementById('addCommentSlide').addEventListener('click', ()=>{ slides.push(newCommentSlide()); persistSlides(); renderSlides(); });
+document.getElementById('addComparisonSlide').addEventListener('click', ()=>{ slides.push(newComparisonSlide()); persistSlides(); renderSlides(); });
+document.getElementById('clearSlides').addEventListener('click', async ()=>{
+  if(slides.length && !confirm('Remover todos os slides do carrossel?')) return;
+  for(const s of slides){
+    try{ await window.storage.delete(imgKey(s.id,'img'), true); }catch(e){}
+    try{ await window.storage.delete(imgKey(s.id,'colA'), true); }catch(e){}
+    try{ await window.storage.delete(imgKey(s.id,'colB'), true); }catch(e){}
+  }
+  slides = []; persistSlides(); renderSlides();
+});
+
+function renderSlides(){
+  const strip = document.getElementById('slidesStrip');
+  const emptyBuilder = document.getElementById('emptyBuilder');
+  strip.innerHTML = '';
+  emptyBuilder.style.display = slides.length ? 'none' : 'block';
+
+  slides.forEach((s, idx)=>{
+    const unit = document.createElement('div');
+    unit.className = 'slide-unit';
+    let frameHtml = '';
+    if(s.type === 'tweet'){
+      frameHtml = `
+        <div class="frame" id="frame-${s.id}">
+          <div class="content-card">
+            <div class="f-header">
+              <div class="f-avatar"></div>
+              <div class="f-name-block">
+                <div class="f-name-row"><span class="f-name" contenteditable="true" data-field="name">${s.name}</span>${VERIFIED_SVG}</div>
+                <span class="f-handle" contenteditable="true" data-field="handle">${s.handle}</span>
+              </div>
+            </div>
+            <div class="f-body" contenteditable="true" data-field="text">${s.text}</div>
+            <div class="f-imgslot${s.img ? '' : ' is-empty'}" data-imgkey="img">${s.img ? `<img src="${s.img}">` : `<span class="ph">clique para adicionar imagem (opcional)</span>`}</div>
+          </div>
+        </div>`;
+    } else if(s.type === 'comment'){
+      frameHtml = `
+        <div class="frame" id="frame-${s.id}">
+          <div class="content-card">
+            <div class="f-header">
+              <div class="f-avatar"></div>
+              <div class="f-name-block">
+                <div class="f-name-row"><span class="f-name" contenteditable="true" data-field="name">${s.name}</span>${VERIFIED_SVG}</div>
+                <span class="f-handle" contenteditable="true" data-field="handle">${s.handle}</span>
+              </div>
+            </div>
+            <div class="f-body" contenteditable="true" data-field="text">${s.text}</div>
+          </div>
+        </div>`;
+    } else {
+      frameHtml = `
+        <div class="frame" id="frame-${s.id}">
+          <div class="content-card">
+            <div class="f-header">
+              <div class="f-avatar"></div>
+              <div class="f-name-block">
+                <div class="f-name-row"><span class="f-name" contenteditable="true" data-field="name">${s.name}</span>${VERIFIED_SVG}</div>
+                <span class="f-handle" contenteditable="true" data-field="handle">${s.handle}</span>
+              </div>
+            </div>
+            <div class="f-title" contenteditable="true" data-field="title">${s.title}</div>
+            <div class="f-compare-row">
+              <div class="f-col">
+                <div class="f-col-label" contenteditable="true" data-field="colALabel">${s.colALabel}</div>
+                <div class="f-col-sub" contenteditable="true" data-field="colASub">${s.colASub}</div>
+                <div class="f-imgslot${s.colAImg ? '' : ' is-empty'}" data-imgkey="colA">${s.colAImg ? `<img src="${s.colAImg}">` : `<span class="ph">clique p/ imagem</span>`}</div>
+              </div>
+              <div class="f-col">
+                <div class="f-col-label" contenteditable="true" data-field="colBLabel">${s.colBLabel}</div>
+                <div class="f-col-sub" contenteditable="true" data-field="colBSub">${s.colBSub}</div>
+                <div class="f-imgslot${s.colBImg ? '' : ' is-empty'}" data-imgkey="colB">${s.colBImg ? `<img src="${s.colBImg}">` : `<span class="ph">clique p/ imagem</span>`}</div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+    unit.innerHTML = `
+      <div class="slide-unit-toolbar">
+        <span>slide ${idx+1} · ${s.type==='tweet' ? 'tweet' : s.type==='comment' ? 'só texto' : 'comparação'}</span>
+        <div style="display:flex;gap:6px;">
+          <button class="mini-btn" data-download="${s.id}">Baixar PNG</button>
+          <button class="mini-btn danger" data-remove="${s.id}">remover</button>
+        </div>
+      </div>
+      ${frameHtml}
+      <input type="file" accept="image/*" style="display:none" id="file-${s.id}">
+    `;
+    strip.appendChild(unit);
+
+    unit.querySelectorAll('[contenteditable]').forEach(el=>{
+      el.addEventListener('paste', function(e){
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+        document.execCommand('insertText', false, text);
+      });
+      el.addEventListener('blur', ()=>{ s[el.getAttribute('data-field')] = el.innerText; persistSlides(); });
+    });
+
+    const fileInput = unit.querySelector(`#file-${s.id}`);
+    unit.querySelectorAll('.f-imgslot').forEach(slot=>{
+      slot.addEventListener('click', ()=>{ fileInput.dataset.targetKey = slot.getAttribute('data-imgkey'); fileInput.click(); });
+    });
+    fileInput.addEventListener('change', async (e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      const targetKey = fileInput.dataset.targetKey;
+      try{
+        const compressed = await resizeImage(file, 900, 0.72);
+        if(targetKey === 'img'){ s.img = compressed; }
+        else if(targetKey === 'colA'){ s.colAImg = compressed; }
+        else if(targetKey === 'colB'){ s.colBImg = compressed; }
+        renderSlides();
+        await saveSlideImage(s.id, targetKey, compressed);
+      }catch(err){
+        console.error('Erro ao processar imagem', err);
+        alert('Não consegui processar essa imagem. Tenta outra foto ou um formato diferente (JPG/PNG).');
+      }
+      fileInput.value = '';
+    });
+
+    unit.querySelector('[data-remove]').addEventListener('click', async ()=>{
+      try{ await window.storage.delete(imgKey(s.id,'img'), true); }catch(e){}
+      try{ await window.storage.delete(imgKey(s.id,'colA'), true); }catch(e){}
+      try{ await window.storage.delete(imgKey(s.id,'colB'), true); }catch(e){}
+      slides = slides.filter(x=>x.id!==s.id);
+      persistSlides(); renderSlides();
+    });
+
+    unit.querySelector('[data-download]').addEventListener('click', (e)=>{
+      const btn = e.target;
+      btn.disabled = true; btn.innerText='Gerando...';
+      const frameNode = document.getElementById(`frame-${s.id}`);
+      html2canvas(frameNode, {scale:3, backgroundColor:'#ffffff', useCORS:true, allowTaint:true}).then(canvas=>{
+        canvas.toBlob(blob=>{
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.download = `flowlance-slide-${idx+1}.png`;
+          link.href = url;
+          document.body.appendChild(link); link.click(); document.body.removeChild(link);
+          setTimeout(()=>URL.revokeObjectURL(url), 2000);
+          btn.disabled = false; btn.innerText = 'Baixar PNG';
+        }, 'image/png');
+      }).catch(()=>{
+        alert('Não foi possível gerar a imagem. Tenta no Chrome ou desativa bloqueadores de anúncio.');
+        btn.disabled = false; btn.innerText = 'Baixar PNG';
+      });
+    });
+  });
+}
+
+/* ===================== ROTEIRO BUILDER ===================== */
+function fillSelect(id, list){
+  const sel = document.getElementById(id);
+  sel.innerHTML = list.map(t=>`<option value="${t.replace(/"/g,'&quot;')}">${t}</option>`).join('');
+}
+fillSelect('r-hook', roteiroLib.hook);
+fillSelect('r-agitar', roteiroLib.agitar);
+fillSelect('r-solucao', roteiroLib.solucao);
+fillSelect('r-cta', roteiroLib.cta);
+
+document.getElementById('montarRoteiro').addEventListener('click', ()=>{
+  const hook = document.getElementById('r-hook').value;
+  const agitar = document.getElementById('r-agitar').value;
+  const solucao = document.getElementById('r-solucao').value;
+  const cta = document.getElementById('r-cta').value;
+  document.getElementById('roteiroText').innerText = `[HOOK]\n${hook}\n\n[AGITAR]\n${agitar}\n\n[SOLUÇÃO]\n${solucao}\n\n[CTA]\n${cta}`;
+  document.getElementById('roteiroPreview').style.display = 'block';
+});
+document.getElementById('copyRoteiro').addEventListener('click', ()=>{
+  navigator.clipboard.writeText(document.getElementById('roteiroText').innerText).then(()=>{
+    const btn = document.getElementById('copyRoteiro');
+    const original = btn.innerText;
+    btn.innerText = 'Copiado!';
+    setTimeout(()=> btn.innerText = original, 1500);
+  });
+});
+
+/* ===================== INIT ===================== */
+loadIdeas();
+loadSlides();
+</script>
+</body>
+</html>
