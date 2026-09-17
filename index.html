@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central de criativos — Flowlance</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root{
+    --bg:#0D0D0F; --surface:#17171A; --surface-2:#1F1F23; --border:#2C2C31;
+    --gold:#F2B705; --gold-dim:#8A6B0E; --text:#EDEDEA; --text-2:#9C9A93;
+    --alto:#3FBF7F; --alto-bg:#0f2a1e;
+    --medio:#F2B705; --medio-bg:#3a2c05;
+    --baixo:#8a8a90; --baixo-bg:#232326;
+    --feita:#4C8DFF; --feita-bg:#132038;
+    --traffic:#F2765A; --traffic-bg:#3a1c14;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;padding:32px 20px 80px;}
+  .wrap{max-width:1080px;margin:0 auto;}
+  header{margin-bottom:20px;}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold);letter-spacing:0.04em;text-transform:uppercase;margin:0 0 8px;}
+  h1{font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:700;margin:0 0 8px;line-height:1.15;}
+  .sub{color:var(--text-2);font-size:14px;line-height:1.6;max-width:680px;margin:0;}
+
+  .tabs{display:flex;gap:6px;margin:24px 0 26px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+  .tab-btn{background:none;border:none;color:var(--text-2);padding:10px 16px;font-size:13.5px;font-family:'Inter',sans-serif;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+  .tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  .banner{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:12.5px;color:var(--text-2);margin:0 0 22px;}
+  .banner b{color:var(--gold-dim);}
+  .guide-box{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:0 0 22px;font-size:12.5px;color:var(--text-2);line-height:1.6;}
+  .guide-box h3{font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--text);margin:0 0 10px;}
+  .guide-box b{color:var(--gold);}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+  .search{flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;}
+  .search:focus{outline:none;border-color:var(--gold-dim);}
+  select{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;}
+  .add-btn{background:var(--gold);color:#1A1400;border:none;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;}
+  .add-btn:hover{background:#ffca1f;}
+  .btn-secondary{background:none;border:1px solid var(--border);color:var(--text-2);padding:9px 16px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;}
+  .btn-secondary:hover{color:var(--text);border-color:var(--text-2);}
+
+  .potential-legend{display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2);}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:border-color .15s;}
+  .card:hover{border-color:var(--gold-dim);}
+  .card.is-arquivada{opacity:0.55;}
+  .card-top{display:flex;justify-content:space-between;align-items:center;}
+  .cat-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.03em;}
+  .potential-badge{font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:3px 10px;border-radius:20px;font-weight:600;text-transform:uppercase;}
+  .status-badge{font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:3px 10px;border-radius:20px;font-weight:600;text-transform:uppercase;background:var(--feita-bg);color:var(--feita);}
+  .card-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;margin:0;line-height:1.3;}
+  .card-hook{font-size:13.5px;color:var(--text);line-height:1.5;margin:0;padding:10px 12px;background:var(--surface-2);border-left:2px solid var(--gold-dim);border-radius:0 6px 6px 0;}
+  .card-why{font-size:12.5px;color:var(--text-2);line-height:1.5;margin:0;}
+  .card-traffic{font-size:11px;color:var(--traffic);font-family:'JetBrains Mono',monospace;background:var(--traffic-bg);border-radius:8px;padding:6px 10px;}
+  .card-metrics{font-size:11.5px;color:var(--feita);font-family:'JetBrains Mono',monospace;background:var(--feita-bg);border-radius:8px;padding:8px 10px;}
+  .card-foot{display:flex;justify-content:space-between;align-items:center;margin-top:2px;padding-top:10px;border-top:1px solid var(--border);}
+  .card-meta{font-size:11px;color:var(--text-2);font-family:'JetBrains Mono',monospace;}
+  .card-status-actions{display:flex;gap:6px;justify-content:flex-end;}
+  .status-btn{background:var(--surface-2);border:1px solid var(--border);color:var(--text-2);font-size:11px;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;}
+  .status-btn:hover{color:var(--text);border-color:var(--text-2);}
+  .status-btn.done:hover{color:var(--feita);border-color:var(--feita);}
+  .status-btn.archive:hover{color:#e0554f;border-color:#e0554f;}
+  .empty{color:var(--text-2);font-size:13px;padding:40px 0;text-align:center;}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);display:none;align-items:flex-start;justify-content:center;z-index:20;padding:40px 20px;overflow-y:auto;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;max-width:480px;width:100%;}
+  .modal h2{font-family:'Space Grotesk',sans-serif;font-size:18px;margin:0 0 16px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;color:var(--text-2);margin-bottom:6px;}
+  .field input,.field textarea,.field select{width:100%;background:var(--surface-2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13.5px;font-family:'Inter',sans-serif;}
+  .field textarea{resize:vertical;min-height:60px;}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:8px;}
+  .field-row{display:flex;gap:10px;}
+  .field-row .field{flex:1;}
+
+  .idea-modal{max-width:600px;}
+  .idea-modal-head{margin-bottom:18px;}
+  .idea-modal-head h2{margin:6px 0 0;}
+  .idea-why{background:var(--surface-2);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--text);line-height:1.6;margin:14px 0 14px;}
+  .idea-why b{color:var(--gold);display:block;font-family:'Space Grotesk',sans-serif;font-size:12.5px;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.03em;}
+  .idea-traffic{background:var(--traffic-bg);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--text);line-height:1.6;margin-bottom:20px;}
+  .idea-traffic b{color:var(--traffic);display:block;font-family:'Space Grotesk',sans-serif;font-size:12.5px;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.03em;}
+  .idea-traffic .traffic-type{display:inline-block;background:var(--surface);padding:2px 8px;border-radius:12px;font-family:'JetBrains Mono',monospace;font-size:11px;margin-bottom:6px;}
+  .idea-metrics-box{background:var(--feita-bg);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--text);margin-bottom:20px;}
+  .idea-metrics-box b{color:var(--feita);display:block;font-family:'Space Grotesk',sans-serif;font-size:12.5px;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.03em;}
+  .slide-list{display:flex;flex-direction:column;gap:10px;margin-bottom:22px;}
+  .slide-item{display:flex;gap:12px;background:var(--surface-2);border-radius:10px;padding:12px 14px;}
+  .slide-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold-dim);flex-shrink:0;width:22px;padding-top:2px;}
+  .slide-item p{margin:0;font-size:13.5px;line-height:1.55;color:var(--text);}
+  .slide-item .slide-type-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);background:var(--surface);padding:1px 6px;border-radius:10px;margin-bottom:5px;}
+  .idea-modal-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
+
+  .builder-controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px;}
+  .slides-strip{display:flex;flex-wrap:wrap;gap:26px;}
+  .slide-unit{display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;}
+  .slide-unit-toolbar{display:flex;justify-content:space-between;width:100%;align-items:center;}
+  .slide-unit-toolbar span{font-size:11px;color:var(--text-2);font-family:'JetBrains Mono',monospace;}
+  .mini-btn{background:var(--surface-2);border:1px solid var(--border);color:var(--text);font-size:11.5px;padding:6px 10px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;}
+  .mini-btn:hover{border-color:var(--gold-dim);color:var(--gold);}
+  .mini-btn.danger:hover{border-color:#e0554f;color:#e0554f;}
+  .type-switch-row{display:flex;gap:6px;width:100%;justify-content:center;}
+  .type-btn.is-active{background:var(--gold);color:#1A1400;border-color:var(--gold);}
+
+  .frame{width:360px;height:640px;background:#ffffff;border:1px solid #ddd;box-shadow:0 2px 12px rgba(0,0,0,0.08);font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;box-sizing:border-box;padding:24px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .content-card{width:100%;max-height:100%;overflow:hidden;}
+  .f-header{display:flex;gap:10px;align-items:flex-start;}
+  .f-avatar{width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0;cursor:pointer;transition:opacity .15s;background:#000;}
+  .f-avatar:hover{opacity:0.85;}
+  .f-name-block{display:flex;flex-direction:column;}
+  .f-name-row{display:flex;align-items:center;gap:4px;}
+  .f-name{font-weight:700;font-size:14px;color:#0f1419;outline:none;min-width:20px;}
+  .f-verified{width:15px;height:15px;flex-shrink:0;}
+  .f-avatar img{width:100%;height:100%;object-fit:cover;display:block;}
+  .f-handle{font-size:13px;color:#657786;outline:none;min-width:20px;}
+  .f-body{margin-top:12px;font-size:17px;line-height:1.42;color:#0f1419;font-weight:400;outline:none;min-height:24px;}
+  .f-title{margin-top:12px;font-size:22px;line-height:1.22;font-weight:700;color:#0f1419;outline:none;min-height:28px;}
+  .f-imgslot{margin-top:12px;width:100%;border-radius:10px;background:#f2f2f2;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;}
+  .f-imgslot.is-empty{height:150px;border:1.5px dashed #ccc;}
+  .f-imgslot img{width:100%;height:100%;object-fit:cover;display:block;}
+  .f-imgslot .ph{font-size:11px;color:#999;text-align:center;padding:0 10px;}
+  .f-compare-row{display:flex;margin-top:14px;gap:8px;}
+  .f-col{flex:1;text-align:center;}
+  .f-col-label{font-size:10px;font-weight:800;letter-spacing:0.3px;color:#0f1419;outline:none;}
+  .f-col-sub{font-size:10px;color:#0f1419;margin-top:2px;outline:none;line-height:1.3;}
+  .f-col .f-imgslot{margin-top:8px;}
+  .f-col .f-imgslot.is-empty{height:110px;}
+  [contenteditable]:hover{background:rgba(29,155,240,0.06);border-radius:4px;}
+  [contenteditable]:focus{background:rgba(29,155,240,0.1);border-radius:4px;outline:none;}
+
+  .empty-builder{color:var(--text-2);font-size:13px;padding:50px 0;text-align:center;max-width:400px;margin:0 auto;line-height:1.6;}
+  .project-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:border-color .15s;}
+  .project-card:hover{border-color:var(--gold-dim);}
+  .project-card-top{display:flex;justify-content:space-between;align-items:center;}
+  .project-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;margin:0;}
+  .project-status{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 9px;border-radius:20px;text-transform:uppercase;}
+  .project-status.rascunho{background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);}
+  .project-status.pronto{background:var(--alto-bg);color:var(--alto);}
+  .project-meta{font-size:11.5px;color:var(--text-2);font-family:'JetBrains Mono',monospace;}
+  .project-card-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:4px;}
+  .editor-header{display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
+  .project-name{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;flex:1;outline:none;padding:4px 8px;border-radius:6px;}
+  .project-name:hover,.project-name:focus{background:var(--surface-2);}
+
+  .roteiro-grid{display:grid;grid-template-columns:1fr;gap:18px;max-width:640px;}
+  .roteiro-field{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+  .roteiro-field label{display:block;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px;}
+  .roteiro-field .hint{font-size:12px;color:var(--text-2);margin-bottom:10px;}
+  .roteiro-preview{background:var(--surface);border:1px solid var(--gold-dim);border-radius:12px;padding:18px 20px;margin-top:22px;max-width:640px;}
+  .roteiro-preview h3{font-family:'Space Grotesk',sans-serif;font-size:15px;margin:0 0 12px;}
+  .roteiro-preview p{font-size:14px;line-height:1.7;color:var(--text);white-space:pre-wrap;margin:0 0 14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Flowlance — marketing</p>
+    <h1>Central de criativos</h1>
+    <p class="sub">Ideias curadas com orientação de tráfego (orgânico/pago, como e quando postar), status de execução e resultado real, construtor visual de carrossel e montador de roteiro.</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="ideias">Banco de ideias</button>
+    <button class="tab-btn" data-tab="carrossel">Montar carrossel</button>
+    <button class="tab-btn" data-tab="roteiro">Montar roteiro</button>
+  </nav>
+
+  <section id="tab-ideias" class="tab-panel active">
+    <div class="guide-box">
+      <h3>Guia rápido de tráfego</h3>
+      <b>Orgânico primeiro, sempre.</b> Só vale pagar tráfego numa ideia que já mostrou sinal de conversão sem pagar nada — pago serve pra ampliar o que já funciona, não pra descobrir o que funciona.<br><br>
+      <b>Quando for testar pago:</b> comece com R$10-15/dia por 1-2 semanas antes de decidir se escala. Gastar os R$600 de uma vez numa ideia não validada é o erro mais comum.<br><br>
+      <b>Melhor horário geral:</b> terça e quarta são os dias mais fortes, com pico entre 17h-21h. Conteúdo educacional rende mais à noite (19h-21h); humor/desabafo, depois das 20h. Evite antes das 10h da manhã e domingo pra alcance orgânico.
+    </div>
+    <div class="banner"><b>Como usar os cards:</b> a barrinha mostra o potencial (verde = alto). Clica pra ver o roteiro completo, o tráfego recomendado e por que a ideia converte. Marca como "Feita" pra registrar resultado real.</div>
+
+    <div class="controls">
+      <input type="text" class="search" id="search" placeholder="Buscar por palavra-chave...">
+      <select id="filterCategory"><option value="">Todas as categorias</option></select>
+      <select id="filterPotential">
+        <option value="">Qualquer potencial</option>
+        <option value="alto">Só potencial alto</option>
+        <option value="medio">Médio</option>
+        <option value="baixo">Baixo</option>
+      </select>
+      <select id="filterStatus">
+        <option value="ativa">Ativas</option>
+        <option value="feita">Feitas</option>
+        <option value="arquivada">Arquivadas</option>
+        <option value="todas">Todas</option>
+      </select>
+      <button class="add-btn" id="openAdd">+ Nova ideia</button>
+    </div>
+
+    <div class="potential-legend">
+      <span class="legend-item"><span class="dot" style="background:var(--alto)"></span>Alto potencial</span>
+      <span class="legend-item"><span class="dot" style="background:var(--medio)"></span>Médio</span>
+      <span class="legend-item"><span class="dot" style="background:var(--baixo)"></span>Baixo</span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="emptyMsg" style="display:none;">Nenhuma ideia encontrada com esse filtro.</p>
+  </section>
+
+  <section id="tab-carrossel" class="tab-panel">
+    <div id="projectsListView">
+      <div class="banner"><b>Como usar:</b> cada carrossel fica salvo separado, como rascunho — dá pra ter vários em andamento e voltar depois, igual rascunho de vídeo do TikTok.</div>
+      <div class="builder-controls">
+        <button class="add-btn" id="newProjectBtn">+ Novo carrossel</button>
+      </div>
+      <div class="grid" id="projectsGrid"></div>
+      <p class="empty-builder" id="emptyProjects">Nenhum carrossel ainda. Cria um novo acima, ou vai no Banco de ideias e usa "Montar esse criativo" num card.</p>
+    </div>
+
+    <div id="projectEditorView" style="display:none;">
+      <div class="editor-header">
+        <button class="btn-secondary" id="backToProjects">← Meus carrosséis</button>
+        <span class="project-name" id="projectNameLabel" contenteditable="true"></span>
+        <button class="btn-secondary" id="toggleProjectStatus"></button>
+      </div>
+      <div class="banner"><b>Como usar:</b> clica nos textos pra editar, clica nas caixas cinzas pra subir imagem. Sai sempre em 1080x1920, pronto pro TikTok/Instagram.</div>
+      <div class="builder-controls">
+        <button class="add-btn" id="addTweetSlide">+ Slide estilo tweet</button>
+        <button class="add-btn" id="addCommentSlide">+ Slide só texto</button>
+        <button class="add-btn" id="addComparisonSlide">+ Slide de comparação</button>
+        <button class="add-btn" id="downloadAllBtn" style="background:var(--feita);">Baixar todos</button>
+        <button class="btn-secondary" id="clearSlides">Limpar tudo</button>
+      </div>
+      <div class="slides-strip" id="slidesStrip"></div>
+      <p class="empty-builder" id="emptyBuilder">Nenhum slide ainda neste carrossel. Adiciona um acima.</p>
+    </div>
+  </section>
+
+
+  <section id="tab-roteiro" class="tab-panel">
+    <div class="banner"><b>Como usar:</b> escolhe uma frase pronta pra cada parte do vídeo e monta o roteiro completo.</div>
+    <div class="roteiro-grid">
+      <div class="roteiro-field"><label>1. Hook (gancho inicial)</label><p class="hint">Os primeiros 2-3 segundos. Precisa parar o scroll.</p><select id="r-hook"></select></div>
+      <div class="roteiro-field"><label>2. Agitar (a dor)</label><p class="hint">Mostra a consequência chata do problema.</p><select id="r-agitar"></select></div>
+      <div class="roteiro-field"><label>3. Solução</label><p class="hint">Onde o Flowlance entra e resolve.</p><select id="r-solucao"></select></div>
+      <div class="roteiro-field"><label>4. CTA</label><p class="hint">Uma ação só, bem clara.</p><select id="r-cta"></select></div>
+      <button class="add-btn" id="montarRoteiro" style="width:fit-content;">Montar roteiro</button>
+    </div>
+    <div class="roteiro-preview" id="roteiroPreview" style="display:none;">
+      <h3>Seu roteiro:</h3>
+      <p id="roteiroText"></p>
+      <button class="btn-secondary" id="copyRoteiro">Copiar texto</button>
+    </div>
+  </section>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>Nova ideia de criativo</h2>
+    <div class="field"><label>Título</label><input type="text" id="f-title" placeholder="Ex: Confissão do freelancer envergonhado"></div>
+    <div class="field"><label>Categoria</label>
+      <select id="f-category"><option value="Carrossel">Carrossel</option><option value="Vídeo">Vídeo</option><option value="Oferta">Oferta</option><option value="UGC">UGC</option><option value="Estático">Estático/meme</option></select>
+    </div>
+    <div class="field"><label>Potencial de conversão</label>
+      <select id="f-potential"><option value="alto">Alto</option><option value="medio">Médio</option><option value="baixo">Baixo</option></select>
+    </div>
+    <div class="field"><label>Por que converte</label><textarea id="f-why" placeholder="Explique o raciocínio por trás dessa ideia, em 1-2 frases"></textarea></div>
+    <div class="field"><label>Tráfego recomendado (opcional)</label><input type="text" id="f-traffic-how" placeholder="Ex: Orgânico primeiro, terça 17h-21h"></div>
+    <div class="field"><label>Passos / roteiro (um por linha, na ordem)</label><textarea id="f-slides" style="min-height:120px;" placeholder="Hook...&#10;Agitar...&#10;Solução...&#10;CTA..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="cancelAdd">Cancelar</button>
+      <button class="add-btn" id="saveIdea">Salvar ideia</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="metricsModalOverlay">
+  <div class="modal">
+    <h2>Marcar como feita</h2>
+    <p style="font-size:12.5px;color:var(--text-2);margin-top:-8px;margin-bottom:16px;">Registrar resultado é opcional, mas ajuda a saber o que realmente funciona.</p>
+    <div class="field-row">
+      <div class="field"><label>Visualizações</label><input type="number" id="m-views" placeholder="0"></div>
+      <div class="field"><label>Comentários</label><input type="number" id="m-comments" placeholder="0"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Cliques no link</label><input type="number" id="m-clicks" placeholder="0"></div>
+      <div class="field"><label>Trials/assinaturas</label><input type="number" id="m-trials" placeholder="0"></div>
+    </div>
+    <div class="field"><label>Nota rápida (opcional)</label><textarea id="m-note" placeholder="Ex: performou melhor que o esperado"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="cancelMetrics">Cancelar</button>
+      <button class="add-btn" id="saveMetrics">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="ideaModalOverlay">
+  <div class="modal idea-modal" id="ideaModalContent"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+/* Fallback: fora do ambiente Claude (ex: hospedado na Vercel), window.storage não existe.
+   Essa camada recria a mesma API usando localStorage do navegador, pra ferramenta
+   continuar funcionando sozinha. Diferença importante: localStorage é por navegador/
+   dispositivo — não é mais compartilhado automaticamente entre você e seus sócios
+   como era dentro do Claude. */
+if(typeof window.storage === 'undefined'){
+  window.storage = {
+    get: async (key) => {
+      const raw = localStorage.getItem(key);
+      if(raw === null) throw new Error('not found');
+      return { key, value: raw, shared: false };
+    },
+    set: async (key, value) => {
+      localStorage.setItem(key, value);
+      return { key, value, shared: false };
+    },
+    delete: async (key) => {
+      localStorage.removeItem(key);
+      return { key, deleted: true, shared: false };
+    },
+    list: async (prefix) => {
+      const keys = Object.keys(localStorage).filter(k => !prefix || k.startsWith(prefix));
+      return { keys, prefix, shared: false };
+    }
+  };
+}
+
+const IDEAS_KEY = 'flowlance_ideias_v8';
+const SLIDES_KEY_UNUSED_LEGACY = 'flowlance_slides_v2'; // mantido só por referência histórica, não usado mais
+const potentialRank = {alto:3, medio:2, baixo:1};
+const VERIFIED_SVG = '<svg class="f-verified" viewBox="0 0 22 22" fill="#1D9BF0"><path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568-.54.354-.972.853-1.245 1.44-.607-.223-1.264-.27-1.897-.14-.634.132-1.218.437-1.687.882-.445.469-.75 1.053-.882 1.687-.13.633-.083 1.29.14 1.897-.586.274-1.084.706-1.438 1.246-.354.541-.552 1.17-.57 1.816.018.646.216 1.276.57 1.817.354.54.852.972 1.438 1.245-.223.607-.27 1.264-.14 1.897.132.634.437 1.218.882 1.687.469.445 1.053.75 1.687.882.633.13 1.29.083 1.897-.14.274.587.705 1.086 1.245 1.44.54.354 1.167.551 1.813.568.646-.017 1.276-.214 1.816-.568.54-.354.972-.853 1.245-1.44.607.223 1.264.27 1.897.14.634-.132 1.217-.437 1.687-.882.445-.469.75-1.053.882-1.687.13-.633.082-1.29-.14-1.897.586-.273 1.084-.705 1.438-1.245.354-.54.552-1.17.57-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z"/></svg>';
+const DEFAULT_AVATAR = 'data:image/png;base64,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';
+
+/* ===================== SEED — IDEIAS ===================== */
+/* traffic: {type: 'Orgânico' | 'Pago' | 'Ambos', how: string, when: string} */
+const seedIdeas = [
+  {id:'c1', title:'O que é o Flowlance, em 10 segundos', category:'Vídeo', potential:'alto', status:'ativa', metrics:null,
+    why:'Resolve direto o problema relatado: gente que assiste os vídeos e não entende pra que serve o produto. Esse formato existe só pra deixar isso impossível de não entender, antes de qualquer gancho criativo.',
+    traffic:{type:'Ambos', how:'Fixa esse no perfil (destaque/pin) além de postar. É a resposta padrão pra quem chega confuso.', when:'Terça ou quarta, 17h-21h.'},
+    slides:['Várias pessoas comentaram que não entenderam pra que serve o Flowlance. Bora resolver isso em 10 segundos.','O Flowlance é uma ferramenta pra freelancer e agência pequena organizar 3 coisas: proposta, cobrança e agenda de cliente.','Você monta a proposta, o cliente aceita, a cobrança acontece automática, e fica tudo registrado num só lugar.','Isso é tudo. Nada mais complicado que isso. Link na bio.']},
+  {id:'c2', title:'3 coisas que o Flowlance faz por você', category:'Carrossel', potential:'alto', status:'ativa', metrics:null,
+    why:'Lista simples e literal das 3 funções centrais, sem metáfora nem gancho emocional na frente — existe especificamente pra eliminar qualquer ambiguidade sobre o que o produto faz.',
+    traffic:{type:'Orgânico', how:'Conteúdo de referência — funciona bem fixado no perfil também.', when:'Sem horário crítico.'},
+    slides:['O Flowlance faz 3 coisas. Só isso.','1. Proposta: você monta e manda pro cliente, formatada e profissional.','2. Cobrança: quando o cliente aceita, a cobrança já fica programada — sem você precisar lembrar.','3. Agenda: tudo fica registrado, cliente por cliente, sem planilha nem post-it.','flowlance.com.br']},
+  {id:'c3', title:'Isso é pra você se...', category:'Carrossel', potential:'alto', status:'ativa', metrics:null,
+    why:'Chama o público certo de forma explícita — reduz gente errada assistindo (e comentando confuso) e aumenta a chance de quem realmente é o público-alvo se identificar na primeira frase.',
+    traffic:{type:'Ambos', how:'Bom pra qualificar público antes de qualquer anúncio pago — evita gastar impressão com quem não é o público certo.', when:'Terça a quinta, 17h-21h.'},
+    slides:['Isso é pra você se: você é freelancer ou tem uma agência pequena e ainda organiza proposta e cobrança pelo WhatsApp ou planilha.','Se você já perdeu tempo formatando proposta do zero, ou já esqueceu de cobrar um cliente, é pra você.','O Flowlance organiza isso tudo automaticamente. Link na bio.']},
+  {id:'c4', title:'Antes de tudo: pra que serve isso aqui', category:'Vídeo', potential:'alto', status:'ativa', metrics:null,
+    why:'Formato "meta-honesto" — reconhece publicamente a confusão que já existe nos comentários e responde de frente. Isso costuma gerar mais confiança que fingir que a comunicação sempre foi clara.',
+    traffic:{type:'Orgânico', how:'Funciona melhor com tom genuíno, quase um pedido de desculpa educado — não como anúncio.', when:'Depois das 20h.'},
+    slides:['Reparei que muita gente comenta "não entendi pra que serve" nos nossos vídeos. Então vamos direto ao ponto.','O Flowlance existe pra freelancer parar de organizar proposta e cobrança na mão, pelo WhatsApp ou planilha.','Você formata a proposta, manda pro cliente, e a cobrança já sai programada quando ele aceita.','Se ainda ficou alguma dúvida, comenta aqui que eu respondo.']},
+  {id:'c5', title:'Seu dia sem Flowlance vs com Flowlance', category:'Carrossel', potential:'alto', status:'ativa', metrics:null,
+    why:'Comparação concreta de rotina (não de feature abstrata) torna tangível o que muda no dia a dia — mais fácil de entender que qualquer explicação técnica do produto.',
+    traffic:{type:'Ambos', how:'Bom candidato a anúncio depois de validado — comparação de rotina converte bem.', when:'Terça ou quarta, 17h-21h.'},
+    slides:['Como fica seu dia com e sem o Flowlance:',{type:'comparison', title:'Fechando uma proposta nova', colALabel:'SEM FLOWLANCE', colASub:'formata no Word, manda por e-mail, espera resposta, cobra manual depois', colBLabel:'COM FLOWLANCE', colBSub:'monta em minutos, cliente aceita, cobrança já sai programada'},'Menos tempo perdido, mais tempo pra trabalhar de verdade. Link na bio.']},
+  {id:'c6', title:'O Flowlance em 1 frase', category:'Estático', potential:'alto', status:'ativa', metrics:null,
+    why:'Formato mais direto possível — uma única frase grande na tela, sem nenhum outro elemento competindo por atenção. Serve como "cartão de visita" que qualquer pessoa entende em 2 segundos, mesmo sem contexto nenhum.',
+    traffic:{type:'Orgânico', how:'Ótimo pra fixar no perfil (destaque) além de postar — funciona quase como resposta permanente pra "o que é isso?"', when:'Sem horário crítico.'},
+    slides:['"O Flowlance é onde você monta proposta, cobra automático e organiza sua agenda de cliente — tudo num só lugar." flowlance.com.br']},
+  {id:'c7', title:'Pra quem serve (e pra quem não serve)', category:'Carrossel', potential:'medio', status:'ativa', metrics:null,
+    why:'Ser honesto sobre pra quem NÃO é o produto reduz confusão de gente fora do público (que comenta perguntas sem sentido) e aumenta credibilidade de quem é o público certo, porque parece avaliação sincera, não venda genérica.',
+    traffic:{type:'Orgânico', how:'Conteúdo de qualificação — sem push pago necessário.', when:'19h-21h.'},
+    slides:['Pra quem o Flowlance serve: freelancer ou agência pequena que já tem cliente e precisa organizar proposta e cobrança.','Pra quem NÃO serve (ainda): quem tá só começando e nem tem cliente nenhum pra organizar. Foca em conseguir cliente primeiro.','Se você já se encaixa no primeiro grupo, link na bio.']},
+  {id:'c8', title:'3 perguntas que todo mundo faz ao ver por primeira vez', category:'Carrossel', potential:'alto', status:'ativa', metrics:null,
+    why:'Formato de FAQ antecipa exatamente as dúvidas que geram os comentários de confusão — responde antes de precisar perguntar.',
+    traffic:{type:'Orgânico', how:'Conteúdo de referência, sem push pago.', when:'Sem horário crítico.'},
+    slides:['3 perguntas que a gente recebe toda vez que alguém vê o Flowlance por primeira vez.','"Isso é rede social?" Não. É uma ferramenta de gestão pra freelancer organizar proposta e cobrança.','"Preciso saber programar?" Não, é só preencher e usar, como qualquer app.','"Funciona pra qualquer tipo de trabalho freelance?" Sim, desde que você mande proposta e cobre cliente.','Ficou mais claro? Link na bio.']},
+  {id:'c9', title:'Tour pela tela, com nome de cada coisa', category:'Vídeo', potential:'alto', status:'ativa', metrics:null,
+    why:'Screen tour rotulado (literalmente falando o nome de cada parte da tela) elimina qualquer ambiguidade visual — a pessoa vê exatamente onde cada função mencionada fica dentro do produto.',
+    traffic:{type:'Ambos', how:'Ótima demonstração de produto pra virar anúncio depois de validado.', when:'Terça a quinta, 17h-21h.'},
+    slides:['(mostra a tela, falando calmamente) Aqui é onde você cria a proposta.','Aqui é onde fica o status de cada cliente: se já pagou, se tá pendente.','Aqui é a sua agenda, com os compromissos de cada cliente.','Isso é o Flowlance, por completo. Simples assim. flowlance.com.br']},
+  {id:'c10', title:'Flowlance NÃO é isso, é isso', category:'Carrossel', potential:'alto', status:'ativa', metrics:null,
+    why:'Corrige diretamente qualquer suposição errada sobre o que o produto é, algo que provavelmente está por trás de parte da confusão relatada — as pessoas preenchem a lacuna de entendimento com a suposição mais próxima que conhecem (marketplace, rede social, etc).',
+    traffic:{type:'Orgânico', how:'Conteúdo corretivo — funciona bem sem push pago.', when:'19h-21h.'},
+    slides:['O Flowlance NÃO é uma plataforma pra achar cliente novo, tipo marketplace de freelancer.','O Flowlance É uma ferramenta pra organizar os clientes que você já tem: proposta, cobrança e agenda.','Não substitui você conseguir cliente. Ajuda você a não perder tempo organizando o que já fechou.']},
+  {id:'c11', title:'O antes e depois de uma proposta', category:'Carrossel', potential:'alto', status:'ativa', metrics:null,
+    why:'Mostra visualmente o artefato real (a proposta em si) em dois estados — texto solto de WhatsApp vs documento formatado — o que é mais concreto que descrever a diferença em palavras.',
+    traffic:{type:'Ambos', how:'Bom candidato a anúncio depois de validado — comparação visual converte bem.', when:'Terça ou quarta, 17h-21h.'},
+    slides:[{type:'comparison', title:'Como sua proposta chega pro cliente', colALabel:'ANTES', colASub:'texto corrido no WhatsApp, sem formatação', colBLabel:'DEPOIS', colBSub:'documento formatado, com valor e prazo claros'},'Proposta bonita já é meio caminho pra fechar. Link na bio.']},
+  {id:'c12', title:'Um dia normal usando o Flowlance', category:'Vídeo', potential:'medio', status:'ativa', metrics:null,
+    why:'Formato narrativo (não lista de features) mostra o produto sendo usado dentro de um contexto real de rotina — ajuda quem aprende melhor vendo uma história do que vendo uma explicação direta.',
+    traffic:{type:'Orgânico', how:'Storytelling — evita forçar como anúncio direto.', when:'Depois das 20h.'},
+    slides:['Um dia normal meu usando o Flowlance:','De manhã, fechei uma proposta nova com um cliente — levou 5 minutos.','De tarde, vi que outro cliente já tinha pago, sem eu precisar cobrar nada.','À noite, olhei a agenda e vi a reunião de quinta já confirmada.','É basicamente isso que o produto faz no dia a dia.']},
+  {id:'c13', title:'Respondendo: "não entendi pra que serve"', category:'Vídeo', potential:'alto', status:'ativa', metrics:null,
+    why:'Usa um comentário real de confusão (que já está acontecendo, segundo o relato) como gancho — responde a dúvida genuína de alguém, o que tende a gerar mais confiança que uma explicação não solicitada.',
+    traffic:{type:'Orgânico', how:'Depende de ter um comentário real pra usar — repete esse formato toda vez que aparecer um comentário parecido.', when:'Assim que aparecer o comentário certo pra reagir.'},
+    slides:['Alguém comentou "não entendi pra que serve isso" — bora responder de verdade.','(fala respondendo) O Flowlance organiza proposta, cobrança e agenda de cliente pra freelancer e agência pequena.','Se ficou mais claro, comenta aqui. Se ainda tiver dúvida, comenta também que eu respondo de novo.']},
+  {id:'c14', title:'3 segundos pra entender: você cobra, ele registra', category:'Estático', potential:'medio', status:'ativa', metrics:null,
+    why:'Reduz o produto a uma frase de causa-efeito simples — funciona como resumo ultra rápido pra quem só vê o post de passagem, sem tempo de ler mais.',
+    traffic:{type:'Orgânico', how:'Post rápido de reforço de marca.', when:'Sem horário crítico.'},
+    slides:['Cliente aceitou a proposta. O Flowlance já registra e programa a cobrança. Você só recebe. flowlance.com.br']},
+  {id:'c15', title:'Se você já perdeu prazo de pagamento, isso resolve', category:'Carrossel', potential:'alto', status:'ativa', metrics:null,
+    why:'Liga uma dor bem específica e nomeada (esquecer de cobrar/perder prazo) direto à função exata que resolve — clareza de problema-solução, não feature solta.',
+    traffic:{type:'Ambos', how:'Boa candidata a anúncio — dor específica converte melhor que dor genérica.', when:'Terça a quinta, 17h-21h.'},
+    slides:['Já esqueceu de cobrar um cliente e só lembrou semanas depois? Isso é mais comum do que parece.','O Flowlance programa a cobrança assim que o cliente aceita a proposta — você não precisa lembrar de nada.','Testa grátis. Link na bio.']},
+  {id:'c16', title:'Onde ficam todos os seus clientes', category:'Carrossel', potential:'medio', status:'ativa', metrics:null,
+    why:'Explica de forma simples e visual onde as informações de cada cliente ficam guardadas — resolve a dúvida prática de "como isso organiza minha vida" além da parte de cobrança.',
+    traffic:{type:'Orgânico', how:'Conteúdo de demonstração — sem push pago necessário.', when:'19h-21h.'},
+    slides:['Todo cliente que você já fechou fica registrado num só lugar no Flowlance.','Proposta, valor, status de pagamento e próximos compromissos — tudo junto, sem abrir 3 telas diferentes.','Chega de procurar informação de cliente em conversa antiga do WhatsApp.']},
+  {id:'c17', title:'3 mal-entendidos comuns sobre o Flowlance', category:'Carrossel', potential:'alto', status:'ativa', metrics:null,
+    why:'Puxa direto dos mal-entendidos reais que provavelmente geraram os comentários de confusão — corrige em bloco, de uma vez, em vez de responder um por um.',
+    traffic:{type:'Orgânico', how:'Conteúdo corretivo direto — sem push pago.', when:'Terça ou quarta, tarde.'},
+    slides:['3 coisas que as pessoas entendem errado sobre o Flowlance:','"É rede social pra freelancer" — não, é ferramenta de gestão.','"Serve só pra quem programa" — não, qualquer freelancer usa, sem código nenhum.','"É complicado de configurar" — não, você cria conta e já cria a primeira proposta em minutos.','Ficou mais claro agora? Link na bio.']},
+  {id:'u1', title:'Depoimento: "não entendia até ver funcionando"', category:'UGC', potential:'alto', status:'ativa', metrics:null,
+    why:'Se algum usuário real também teve a mesma confusão inicial e depois entendeu ao usar, esse é o depoimento mais valioso possível agora — valida publicamente que o problema de comunicação é real e mostra que ele se resolve rápido ao experimentar.',
+    traffic:{type:'Orgânico', how:'Só usar com depoimento real e consentimento — não fabricar.', when:'Assim que tiver um depoimento assim disponível.'},
+    slides:['Pede pra algum usuário real gravar um relato curto: "eu também não entendia pra que servia, até usar"','Foco em como ficou claro DEPOIS de usar — isso valida que vale a pena testar mesmo sem entender 100% de cara.']},
+  {id:'o1', title:'Teste grátis: você só entende usando', category:'Oferta', potential:'alto', status:'ativa', metrics:null,
+    why:'Reconhece que talvez explicar em vídeo tenha limite, e oferece a alternativa mais direta: experimentar de verdade. Isso é honesto e reduz a barreira de quem ainda não entendeu 100% pelo conteúdo.',
+    traffic:{type:'Ambos', how:'CTA de fechamento — usar depois de qualquer vídeo explicativo, não como abertura.', when:'Terça a quinta, 17h-21h.'},
+    slides:['Se mesmo depois de explicar ainda ficou alguma dúvida, tem um jeito mais rápido de entender: testa de graça.','7 dias, sem cartão, sem compromisso.','flowlance.com.br']}
+];
+
+
+/* ===================== SEED — FRASES DE ROTEIRO ===================== */
+const roteiroLib = {
+  hook: ["Se você é freelancer e ainda usa 5 apps diferentes pra organizar seu trabalho, você tá jogando dinheiro no lixo.","POV: você manda a proposta pelo zap, o cliente vê, e some por 4 dias.","Freelancer que ainda manda proposta pelo WhatsApp não tá sendo humilde. Tá deixando dinheiro na mesa.","Se você já mandou 'oi! lembrando do pagamento 🙏' três vezes pro mesmo cliente, esse vídeo é pra você.","Já imaginou uma utopia onde todos os apps necessários pra se organizar se juntassem em um só?"],
+  agitar: ["Cada parte do seu trabalho espalhada num app diferente = você vivendo no passado.","A gente sabe que é constrangedor. E não precisa ser assim.","Proposta feita com pressa passa imagem de amador — mesmo que seu trabalho seja excelente.","Você perde em média 3 horas por semana só organizando cliente em planilha. Em um ano, são 6 dias inteiros.","Enquanto você ainda manda proposta em PDF, seu concorrente já manda link e recebe o pagamento na hora."],
+  solucao: ["Com o Flowlance, você tem tudo isso em um lugar só: dashboard, calendário, propostas e cobrança automática.","Com o Flowlance a cobrança sai sozinha. Sem lembrete manual, sem climão.","Você manda um link. O cliente vê tudo bonitinho, aceita com um clique, e o pagamento já é gerado na hora.","Propostas profissionais de verdade — o tipo que empresa grande manda.","Tudo isso pelo preço de um lanche de fim de semana."],
+  cta: ["Acesse flowlance.com.br — 7 dias grátis, sem cartão.","Link na bio. Testa grátis agora.","Manda 'proposta' no direct e eu te explico como começar.","7 dias grátis, sem cartão. Comenta 'eu quero' que eu te mando o link."]
+};
+
+/* ===================== IDEIAS: estado e persistência ===================== */
+let ideas = [];
+let pendingStatusIdeaId = null;
+
+async function loadIdeas(){
+  try{
+    const result = await window.storage.get(IDEAS_KEY, true);
+    ideas = result ? JSON.parse(result.value) : seedIdeas;
+  }catch(e){
+    ideas = seedIdeas;
+    try{ await window.storage.set(IDEAS_KEY, JSON.stringify(seedIdeas), true); }catch(e2){}
+  }
+  populateFilters();
+  renderIdeas();
+}
+async function persistIdeas(){
+  try{ await window.storage.set(IDEAS_KEY, JSON.stringify(ideas), true); }catch(e){ console.error('Erro ao salvar ideias', e); }
+}
+function populateFilters(){
+  const catSel = document.getElementById('filterCategory');
+  const cats = [...new Set(ideas.map(i=>i.category))].sort();
+  catSel.innerHTML = '<option value="">Todas as categorias</option>' + cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+}
+function potColor(p){
+  if(p==='alto') return {c:'var(--alto)', bg:'var(--alto-bg)', label:'Alto'};
+  if(p==='medio') return {c:'var(--medio)', bg:'var(--medio-bg)', label:'Médio'};
+  return {c:'var(--baixo)', bg:'var(--baixo-bg)', label:'Baixo'};
+}
+function firstSlideText(idea){
+  const first = idea.slides[0];
+  return typeof first === 'string' ? first : first.title;
+}
+function renderIdeas(){
+  const search = document.getElementById('search').value.toLowerCase();
+  const fCategory = document.getElementById('filterCategory').value;
+  const fPotential = document.getElementById('filterPotential').value;
+  const fStatus = document.getElementById('filterStatus').value;
+
+  let filtered = ideas.filter(i=>{
+    const haystack = (i.title + firstSlideText(i) + i.category + i.why).toLowerCase();
+    const matchesSearch = !search || haystack.includes(search);
+    const matchesCategory = !fCategory || i.category===fCategory;
+    const matchesPotential = !fPotential || i.potential===fPotential;
+    const matchesStatus = fStatus==='todas' || (i.status||'ativa')===fStatus;
+    return matchesSearch && matchesCategory && matchesPotential && matchesStatus;
+  });
+  filtered.sort((a,b)=> (potentialRank[b.potential]||0) - (potentialRank[a.potential]||0));
+
+  const grid = document.getElementById('grid');
+  const emptyMsg = document.getElementById('emptyMsg');
+  grid.innerHTML = '';
+  if(filtered.length===0){ emptyMsg.style.display='block'; return; }
+  emptyMsg.style.display='none';
+
+  filtered.forEach(i=>{
+    const pc = potColor(i.potential);
+    const status = i.status || 'ativa';
+    const card = document.createElement('div');
+    card.className = 'card' + (status==='arquivada' ? ' is-arquivada' : '');
+    card.style.borderLeft = `3px solid ${pc.c}`;
+
+    let metricsHtml = '';
+    if(status==='feita' && i.metrics){
+      const m = i.metrics;
+      const parts = [];
+      if(m.views) parts.push(`${m.views} views`);
+      if(m.comments) parts.push(`${m.comments} comentários`);
+      if(m.clicks) parts.push(`${m.clicks} cliques`);
+      if(m.trials) parts.push(`${m.trials} trials`);
+      metricsHtml = `<div class="card-metrics">${parts.length ? parts.join(' · ') : 'Marcada como feita'}${m.note ? '<br>'+m.note : ''}</div>`;
+    }
+
+    let statusActionsHtml = '';
+    if(status==='ativa'){
+      statusActionsHtml = `<button class="status-btn done" data-done="${i.id}">✓ Feita</button><button class="status-btn archive" data-archive="${i.id}">Arquivar</button>`;
+    } else {
+      statusActionsHtml = `<button class="status-btn" data-reactivate="${i.id}">Reativar</button>`;
+    }
+
+    const trafficHtml = i.traffic ? `<div class="card-traffic">${i.traffic.type} · ${i.traffic.when}</div>` : '';
+
+    card.innerHTML = `
+      <div class="card-top">
+        <span class="cat-label">${i.category}</span>
+        ${status==='feita' ? `<span class="status-badge">Feita</span>` : `<span class="potential-badge" style="background:${pc.bg};color:${pc.c}">${pc.label}</span>`}
+      </div>
+      <p class="card-title">${i.title}</p>
+      <p class="card-hook">"${firstSlideText(i)}"</p>
+      ${metricsHtml}
+      ${trafficHtml}
+      <p class="card-why">${i.why}</p>
+      <div class="card-foot">
+        <span class="card-meta">${i.slides.length} passos</span>
+        <button class="del-btn" data-id="${i.id}" style="background:none;border:none;color:var(--text-2);cursor:pointer;font-size:11px;font-family:'JetBrains Mono',monospace;">remover</button>
+      </div>
+      <div class="card-status-actions">${statusActionsHtml}</div>
+    `;
+    card.addEventListener('click', (e)=>{
+      if(e.target.closest('.del-btn') || e.target.closest('.status-btn')) return;
+      openIdeaModal(i.id);
+    });
+    card.querySelector('.del-btn').addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      ideas = ideas.filter(x=>x.id!==i.id);
+      await persistIdeas(); populateFilters(); renderIdeas();
+    });
+    const doneBtn = card.querySelector('[data-done]');
+    if(doneBtn) doneBtn.addEventListener('click', (e)=>{ e.stopPropagation(); openMetricsModal(i.id); });
+    const archiveBtn = card.querySelector('[data-archive]');
+    if(archiveBtn) archiveBtn.addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      i.status = 'arquivada';
+      await persistIdeas(); renderIdeas();
+    });
+    const reactivateBtn = card.querySelector('[data-reactivate]');
+    if(reactivateBtn) reactivateBtn.addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      i.status = 'ativa';
+      await persistIdeas(); renderIdeas();
+    });
+    grid.appendChild(card);
+  });
+}
+document.getElementById('search').addEventListener('input', renderIdeas);
+document.getElementById('filterCategory').addEventListener('change', renderIdeas);
+document.getElementById('filterPotential').addEventListener('change', renderIdeas);
+document.getElementById('filterStatus').addEventListener('change', renderIdeas);
+
+/* modal nova ideia */
+const overlay = document.getElementById('modalOverlay');
+document.getElementById('openAdd').addEventListener('click', ()=> overlay.classList.add('open'));
+document.getElementById('cancelAdd').addEventListener('click', ()=> overlay.classList.remove('open'));
+document.getElementById('saveIdea').addEventListener('click', async ()=>{
+  const title = document.getElementById('f-title').value.trim();
+  const slidesRaw = document.getElementById('f-slides').value.trim();
+  if(!title || !slidesRaw){ alert('Preenche pelo menos título e os passos.'); return; }
+  const slidesArr = slidesRaw.split('\n').map(s=>s.trim()).filter(Boolean);
+  ideas.unshift({
+    id: 'u'+Date.now(), title,
+    category: document.getElementById('f-category').value,
+    potential: document.getElementById('f-potential').value,
+    status: 'ativa', metrics: null,
+    why: document.getElementById('f-why').value.trim() || 'Sem explicação adicionada ainda.',
+    traffic: { type:'Orgânico', how: document.getElementById('f-traffic-how').value.trim() || 'Testa orgânico primeiro.', when:'A definir' },
+    slides: slidesArr
+  });
+  await persistIdeas(); populateFilters(); renderIdeas();
+  overlay.classList.remove('open');
+  ['f-title','f-why','f-traffic-how','f-slides'].forEach(id=> document.getElementById(id).value='');
+});
+
+/* modal métricas (marcar como feita) */
+const metricsOverlay = document.getElementById('metricsModalOverlay');
+function openMetricsModal(ideaId){
+  pendingStatusIdeaId = ideaId;
+  ['m-views','m-comments','m-clicks','m-trials','m-note'].forEach(id=> document.getElementById(id).value='');
+  metricsOverlay.classList.add('open');
+}
+document.getElementById('cancelMetrics').addEventListener('click', ()=>{ metricsOverlay.classList.remove('open'); pendingStatusIdeaId=null; });
+document.getElementById('saveMetrics').addEventListener('click', async ()=>{
+  const idea = ideas.find(i=>i.id===pendingStatusIdeaId);
+  if(!idea){ metricsOverlay.classList.remove('open'); return; }
+  idea.status = 'feita';
+  idea.metrics = {
+    views: parseInt(document.getElementById('m-views').value) || null,
+    comments: parseInt(document.getElementById('m-comments').value) || null,
+    clicks: parseInt(document.getElementById('m-clicks').value) || null,
+    trials: parseInt(document.getElementById('m-trials').value) || null,
+    note: document.getElementById('m-note').value.trim() || null
+  };
+  await persistIdeas();
+  metricsOverlay.classList.remove('open');
+  pendingStatusIdeaId = null;
+  renderIdeas();
+});
+
+/* modal ideia completa */
+const ideaModalOverlay = document.getElementById('ideaModalOverlay');
+function openIdeaModal(ideaId){
+  const idea = ideas.find(i=>i.id===ideaId);
+  if(!idea) return;
+  const pc = potColor(idea.potential);
+  const status = idea.status || 'ativa';
+  const slidesHtml = idea.slides.map((s, idx)=>{
+    if(typeof s === 'string'){
+      return `<div class="slide-item"><span class="slide-num">${idx+1}</span><p>${s}</p></div>`;
+    }else{
+      return `<div class="slide-item"><span class="slide-num">${idx+1}</span><div><span class="slide-type-tag">comparação</span><p><b>${s.title}</b><br>${s.colALabel}: ${s.colASub} &nbsp;|&nbsp; ${s.colBLabel}: ${s.colBSub}</p></div></div>`;
+    }
+  }).join('');
+
+  let metricsBoxHtml = '';
+  if(status==='feita' && idea.metrics){
+    const m = idea.metrics;
+    const parts = [];
+    if(m.views) parts.push(`${m.views} visualizações`);
+    if(m.comments) parts.push(`${m.comments} comentários`);
+    if(m.clicks) parts.push(`${m.clicks} cliques no link`);
+    if(m.trials) parts.push(`${m.trials} trials/assinaturas`);
+    metricsBoxHtml = `<div class="idea-metrics-box"><b>Resultado real</b>${parts.length ? parts.join(' · ') : 'Sem números registrados ainda'}${m.note ? '<br><br>'+m.note : ''}</div>`;
+  }
+
+  const trafficBoxHtml = idea.traffic ? `<div class="idea-traffic"><b>Tráfego recomendado</b><span class="traffic-type">${idea.traffic.type}</span><br>${idea.traffic.how}<br><br><b style="margin-top:8px;">Melhor horário</b>${idea.traffic.when}</div>` : '';
+
+  document.getElementById('ideaModalContent').innerHTML = `
+    <div class="idea-modal-head">
+      <div class="card-top" style="margin-bottom:8px;">
+        <span class="cat-label">${idea.category}</span>
+        ${status==='feita' ? `<span class="status-badge">Feita</span>` : `<span class="potential-badge" style="background:${pc.bg};color:${pc.c}">${pc.label} potencial</span>`}
+      </div>
+      <h2>${idea.title}</h2>
+    </div>
+    ${metricsBoxHtml}
+    <div class="idea-why"><b>Por que converte</b>${idea.why}</div>
+    ${trafficBoxHtml}
+    <div class="slide-list">${slidesHtml}</div>
+    <div class="idea-modal-actions">
+      <button class="btn-secondary" id="closeIdeaModal">Fechar</button>
+      <button class="btn-secondary" id="copyIdeaBtn">Copiar roteiro completo</button>
+      <button class="add-btn" id="useIdeaBtn">Montar esse criativo →</button>
+    </div>
+  `;
+  ideaModalOverlay.classList.add('open');
+  document.getElementById('closeIdeaModal').addEventListener('click', ()=> ideaModalOverlay.classList.remove('open'));
+  document.getElementById('useIdeaBtn').addEventListener('click', ()=>{ useIdeaAsSlides(idea); ideaModalOverlay.classList.remove('open'); });
+  document.getElementById('copyIdeaBtn').addEventListener('click', ()=>{
+    const text = idea.slides.map((s, idx)=> `${idx+1}. ${typeof s==='string' ? s : s.title+' ('+s.colALabel+': '+s.colASub+' vs '+s.colBLabel+': '+s.colBSub+')'}`).join('\n');
+    navigator.clipboard.writeText(text).then(()=>{
+      const btn = document.getElementById('copyIdeaBtn');
+      const original = btn.innerText;
+      btn.innerText = 'Copiado!';
+      setTimeout(()=> btn.innerText = original, 1500);
+    });
+  });
+}
+
+/* ===================== TABS ===================== */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.getAttribute('data-tab')).classList.add('active');
+  });
+});
+function goToTab(name){ document.querySelector(`.tab-btn[data-tab="${name}"]`).click(); }
+
+/* ===================== CARROSSEL BUILDER — PROJETOS/RASCUNHOS ===================== */
+/* Cada carrossel vira um "projeto" salvo separado, como rascunho de vídeo.
+   Imagens ficam em chaves de storage separadas (uma por slide/slot) pra nunca
+   estourar o limite de tamanho do pacote principal de slides. */
+const PROJECTS_KEY = 'flowlance_projects_v1';
+let projects = [];
+let currentProjectId = null;
+let slides = [];
+
+function imgKey(slideId, slot){ return `flowlance_img_${slideId}_${slot}`; }
+function slidesKeyFor(projectId){ return `flowlance_slides_${projectId}`; }
+
+async function loadProjects(){
+  try{
+    const result = await window.storage.get(PROJECTS_KEY, true);
+    projects = result ? JSON.parse(result.value) : [];
+  }catch(e){ projects = []; }
+  renderProjectsList();
+}
+async function persistProjects(){
+  try{ await window.storage.set(PROJECTS_KEY, JSON.stringify(projects), true); }catch(e){ console.error('Erro ao salvar projetos', e); }
+}
+function renderProjectsList(){
+  const grid = document.getElementById('projectsGrid');
+  const empty = document.getElementById('emptyProjects');
+  grid.innerHTML = '';
+  if(projects.length === 0){ empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  projects.slice().sort((a,b)=> (b.updatedAt||0) - (a.updatedAt||0)).forEach(p=>{
+    const card = document.createElement('div');
+    card.className = 'project-card';
+    const dateStr = p.updatedAt ? new Date(p.updatedAt).toLocaleDateString('pt-BR') : '';
+    card.innerHTML = `
+      <div class="project-card-top">
+        <p class="project-title">${p.name}</p>
+        <span class="project-status ${p.status}">${p.status === 'pronto' ? 'Pronto' : 'Rascunho'}</span>
+      </div>
+      <span class="project-meta">${p.slideCount||0} slides · atualizado ${dateStr}</span>
+      <div class="project-card-actions">
+        <button class="status-btn" data-delproj="${p.id}">excluir</button>
+      </div>
+    `;
+    card.addEventListener('click', (e)=>{ if(e.target.closest('[data-delproj]')) return; openProject(p.id); });
+    card.querySelector('[data-delproj]').addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      if(!confirm(`Excluir o carrossel "${p.name}"? Isso remove todos os slides dele.`)) return;
+      await deleteProject(p.id);
+    });
+    grid.appendChild(card);
+  });
+}
+async function createProject(name, initialSlides){
+  const id = 'proj'+Date.now()+Math.random().toString(16).slice(2);
+  const project = { id, name: name || 'Novo carrossel', status:'rascunho', slideCount: (initialSlides||[]).length, updatedAt: Date.now() };
+  projects.push(project);
+  await persistProjects();
+  currentProjectId = id;
+  slides = initialSlides || [];
+  await persistSlides();
+  showEditor(project);
+}
+async function openProject(id){
+  const project = projects.find(p=>p.id===id);
+  if(!project) return;
+  currentProjectId = id;
+  try{
+    const result = await window.storage.get(slidesKeyFor(id), true);
+    slides = result ? JSON.parse(result.value) : [];
+  }catch(e){ slides = []; }
+  await loadSlideImages();
+  showEditor(project);
+}
+async function deleteProject(id){
+  try{
+    const result = await window.storage.get(slidesKeyFor(id), true);
+    const projSlides = result ? JSON.parse(result.value) : [];
+    for(const s of projSlides){
+      try{ await window.storage.delete(imgKey(s.id,'img'), true); }catch(e){}
+      try{ await window.storage.delete(imgKey(s.id,'colA'), true); }catch(e){}
+      try{ await window.storage.delete(imgKey(s.id,'colB'), true); }catch(e){}
+      try{ await window.storage.delete(imgKey(s.id,'avatar'), true); }catch(e){}
+    }
+  }catch(e){}
+  try{ await window.storage.delete(slidesKeyFor(id), true); }catch(e){}
+  projects = projects.filter(p=>p.id!==id);
+  await persistProjects();
+  renderProjectsList();
+}
+function showEditor(project){
+  document.getElementById('projectsListView').style.display = 'none';
+  document.getElementById('projectEditorView').style.display = 'block';
+  document.getElementById('projectNameLabel').innerText = project.name;
+  const toggleBtn = document.getElementById('toggleProjectStatus');
+  toggleBtn.innerText = project.status === 'pronto' ? '✓ Pronto — voltar pra rascunho' : 'Marcar como pronto';
+  renderSlides();
+}
+async function backToProjectsList(){
+  await syncCurrentProjectMeta();
+  currentProjectId = null;
+  document.getElementById('projectEditorView').style.display = 'none';
+  document.getElementById('projectsListView').style.display = 'block';
+  renderProjectsList();
+}
+async function syncCurrentProjectMeta(){
+  const project = projects.find(p=>p.id===currentProjectId);
+  if(!project) return;
+  project.slideCount = slides.length;
+  project.updatedAt = Date.now();
+  await persistProjects();
+}
+document.getElementById('newProjectBtn').addEventListener('click', ()=>{
+  const name = prompt('Nome do carrossel:', 'Novo carrossel');
+  if(name === null) return;
+  createProject(name.trim() || 'Novo carrossel', []);
+});
+document.getElementById('backToProjects').addEventListener('click', backToProjectsList);
+document.getElementById('projectNameLabel').addEventListener('blur', async (e)=>{
+  const project = projects.find(p=>p.id===currentProjectId);
+  if(!project) return;
+  project.name = e.target.innerText.trim() || project.name;
+  await persistProjects();
+});
+document.getElementById('toggleProjectStatus').addEventListener('click', async ()=>{
+  const project = projects.find(p=>p.id===currentProjectId);
+  if(!project) return;
+  project.status = project.status === 'pronto' ? 'rascunho' : 'pronto';
+  await persistProjects();
+  showEditor(project);
+});
+
+async function loadSlideImages(){
+  for(const s of slides){
+    try{ const r = await window.storage.get(imgKey(s.id,'img'), true); if(r) s.img = r.value; }catch(e){}
+    try{ const r = await window.storage.get(imgKey(s.id,'colA'), true); if(r) s.colAImg = r.value; }catch(e){}
+    try{ const r = await window.storage.get(imgKey(s.id,'colB'), true); if(r) s.colBImg = r.value; }catch(e){}
+    try{ const r = await window.storage.get(imgKey(s.id,'avatar'), true); if(r) s.avatarImg = r.value; }catch(e){}
+  }
+}
+async function persistSlides(){
+  if(!currentProjectId) return;
+  try{
+    const slim = slides.map(s=>{
+      const copy = Object.assign({}, s);
+      delete copy.img; delete copy.colAImg; delete copy.colBImg;
+      return copy;
+    });
+    await window.storage.set(slidesKeyFor(currentProjectId), JSON.stringify(slim), true);
+    await syncCurrentProjectMeta();
+  }catch(e){
+    console.error('Erro ao salvar slides', e);
+    showSaveWarning();
+  }
+}
+let saveWarningTimer = null;
+function showSaveWarning(){
+  let el = document.getElementById('saveWarning');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'saveWarning';
+    el.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#3a1c14;color:#F2765A;border:1px solid #F2765A;padding:10px 18px;border-radius:8px;font-size:12.5px;font-family:Inter,sans-serif;z-index:50;max-width:90vw;text-align:center;';
+    document.body.appendChild(el);
+  }
+  el.innerText = 'Não deu pra salvar automaticamente agora. O slide continua aqui nessa sessão — baixa o PNG antes de fechar a aba, por garantia.';
+  el.style.display = 'block';
+  clearTimeout(saveWarningTimer);
+  saveWarningTimer = setTimeout(()=>{ el.style.display='none'; }, 6000);
+}
+async function saveSlideImage(slideId, slot, dataUrl){
+  try{
+    await window.storage.set(imgKey(slideId, slot), dataUrl, true);
+    return true;
+  }catch(e){
+    console.error('Erro ao salvar imagem', e);
+    showSaveWarning();
+    return false;
+  }
+}
+function resizeImage(file, maxDim, quality, format){
+  format = format || 'jpeg';
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = (evt)=>{
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = ()=>{
+        const ratio = img.width / img.height;
+        let { width, height } = img;
+        if(width > maxDim || height > maxDim){
+          if(width > height){ height = Math.round(height * (maxDim/width)); width = maxDim; }
+          else{ width = Math.round(width * (maxDim/height)); height = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        const mime = format === 'png' ? 'image/png' : 'image/jpeg';
+        resolve({ dataUrl: canvas.toDataURL(mime, quality), ratio });
+      };
+      img.src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function newTweetSlide(prefill){
+  return Object.assign({id:'sl'+Date.now()+Math.random().toString(16).slice(2), type:'tweet', name:'Flowlance', handle:'@flowlanceapp', text:'Escreva aqui o texto do seu post...', img:null, avatarImg:null}, prefill||{});
+}
+function newCommentSlide(prefill){
+  return Object.assign({id:'sl'+Date.now()+Math.random().toString(16).slice(2), type:'comment', name:'Flowlance', handle:'@flowlanceapp', text:'Escreva aqui o texto do seu post...', avatarImg:null}, prefill||{});
+}
+function newComparisonSlide(prefill){
+  return Object.assign({id:'sl'+Date.now()+Math.random().toString(16).slice(2), type:'comparison', name:'Flowlance', handle:'@flowlanceapp', title:'Escreva aqui o título chamativo...', colALabel:'ANTES', colASub:'detalhe da opção A', colAImg:null, colBLabel:'DEPOIS', colBSub:'detalhe da opção B', colBImg:null, avatarImg:null}, prefill||{});
+}
+function convertSlideType(s, newType){
+  if(newType === 'comparison'){
+    if(s.title === undefined) s.title = s.text || 'Escreva aqui o título chamativo...';
+    if(s.colALabel === undefined){ s.colALabel='ANTES'; s.colASub='detalhe da opção A'; s.colAImg=null; }
+    if(s.colBLabel === undefined){ s.colBLabel='DEPOIS'; s.colBSub='detalhe da opção B'; s.colBImg=null; }
+  } else {
+    if(s.text === undefined) s.text = s.title || 'Escreva aqui o texto do seu post...';
+  }
+  s.type = newType;
+}
+function useIdeaAsSlides(idea){
+  const newSlides = idea.slides.map(s=>{
+    if(typeof s === 'string'){ return newTweetSlide({text: s}); }
+    return newComparisonSlide({title: s.title, colALabel: s.colALabel, colASub: s.colASub, colBLabel: s.colBLabel, colBSub: s.colBSub});
+  });
+  goToTab('carrossel');
+  createProject(idea.title, newSlides);
+}
+
+document.getElementById('addTweetSlide').addEventListener('click', ()=>{ slides.push(newTweetSlide()); persistSlides(); renderSlides(); });
+document.getElementById('addCommentSlide').addEventListener('click', ()=>{ slides.push(newCommentSlide()); persistSlides(); renderSlides(); });
+document.getElementById('addComparisonSlide').addEventListener('click', ()=>{ slides.push(newComparisonSlide()); persistSlides(); renderSlides(); });
+document.getElementById('clearSlides').addEventListener('click', async ()=>{
+  if(slides.length && !confirm('Remover todos os slides deste carrossel?')) return;
+  for(const s of slides){
+    try{ await window.storage.delete(imgKey(s.id,'img'), true); }catch(e){}
+    try{ await window.storage.delete(imgKey(s.id,'colA'), true); }catch(e){}
+    try{ await window.storage.delete(imgKey(s.id,'colB'), true); }catch(e){}
+    try{ await window.storage.delete(imgKey(s.id,'avatar'), true); }catch(e){}
+  }
+  slides = []; persistSlides(); renderSlides();
+});
+
+function renderSlides(){
+  const strip = document.getElementById('slidesStrip');
+  const emptyBuilder = document.getElementById('emptyBuilder');
+  strip.innerHTML = '';
+  emptyBuilder.style.display = slides.length ? 'none' : 'block';
+
+  slides.forEach((s, idx)=>{
+    const unit = document.createElement('div');
+    unit.className = 'slide-unit';
+    let frameHtml = '';
+
+    const imgStyle = (ratio) => ratio ? ` style="aspect-ratio:${ratio}"` : '';
+    if(s.type === 'tweet'){
+      frameHtml = `
+        <div class="frame" id="frame-${s.id}">
+          <div class="content-card">
+            <div class="f-header">
+              <div class="f-avatar" data-imgkey="avatar"><img src="${s.avatarImg || DEFAULT_AVATAR}"></div>
+              <div class="f-name-block">
+                <div class="f-name-row"><span class="f-name" contenteditable="true" data-field="name">${s.name}</span>${VERIFIED_SVG}</div>
+                <span class="f-handle" contenteditable="true" data-field="handle">${s.handle}</span>
+              </div>
+            </div>
+            <div class="f-body" contenteditable="true" data-field="text">${s.text}</div>
+            <div class="f-imgslot${s.img ? '' : ' is-empty'}" data-imgkey="img"${imgStyle(s.imgRatio)}>${s.img ? `<img src="${s.img}">` : `<span class="ph">clique para adicionar imagem (opcional)</span>`}</div>
+          </div>
+        </div>`;
+    } else if(s.type === 'comment'){
+      frameHtml = `
+        <div class="frame" id="frame-${s.id}">
+          <div class="content-card">
+            <div class="f-header">
+              <div class="f-avatar" data-imgkey="avatar"><img src="${s.avatarImg || DEFAULT_AVATAR}"></div>
+              <div class="f-name-block">
+                <div class="f-name-row"><span class="f-name" contenteditable="true" data-field="name">${s.name}</span>${VERIFIED_SVG}</div>
+                <span class="f-handle" contenteditable="true" data-field="handle">${s.handle}</span>
+              </div>
+            </div>
+            <div class="f-body" contenteditable="true" data-field="text">${s.text}</div>
+          </div>
+        </div>`;
+    } else {
+      frameHtml = `
+        <div class="frame" id="frame-${s.id}">
+          <div class="content-card">
+            <div class="f-header">
+              <div class="f-avatar" data-imgkey="avatar"><img src="${s.avatarImg || DEFAULT_AVATAR}"></div>
+              <div class="f-name-block">
+                <div class="f-name-row"><span class="f-name" contenteditable="true" data-field="name">${s.name}</span>${VERIFIED_SVG}</div>
+                <span class="f-handle" contenteditable="true" data-field="handle">${s.handle}</span>
+              </div>
+            </div>
+            <div class="f-title" contenteditable="true" data-field="title">${s.title}</div>
+            <div class="f-compare-row">
+              <div class="f-col">
+                <div class="f-col-label" contenteditable="true" data-field="colALabel">${s.colALabel}</div>
+                <div class="f-col-sub" contenteditable="true" data-field="colASub">${s.colASub}</div>
+                <div class="f-imgslot${s.colAImg ? '' : ' is-empty'}" data-imgkey="colA"${imgStyle(s.colAImgRatio)}>${s.colAImg ? `<img src="${s.colAImg}">` : `<span class="ph">clique p/ imagem</span>`}</div>
+              </div>
+              <div class="f-col">
+                <div class="f-col-label" contenteditable="true" data-field="colBLabel">${s.colBLabel}</div>
+                <div class="f-col-sub" contenteditable="true" data-field="colBSub">${s.colBSub}</div>
+                <div class="f-imgslot${s.colBImg ? '' : ' is-empty'}" data-imgkey="colB"${imgStyle(s.colBImgRatio)}>${s.colBImg ? `<img src="${s.colBImg}">` : `<span class="ph">clique p/ imagem</span>`}</div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+    unit.innerHTML = `
+      <div class="slide-unit-toolbar">
+        <span>slide ${idx+1} · ${s.type==='tweet' ? 'tweet' : s.type==='comment' ? 'só texto' : 'comparação'}</span>
+        <div style="display:flex;gap:6px;">
+          <button class="mini-btn" data-download="${s.id}">Baixar PNG</button>
+          <button class="mini-btn danger" data-remove="${s.id}">remover</button>
+        </div>
+      </div>
+      <div class="type-switch-row">
+        <button class="mini-btn type-btn${s.type==='tweet' ? ' is-active' : ''}" data-settype="tweet" data-slideid="${s.id}">Tweet</button>
+        <button class="mini-btn type-btn${s.type==='comment' ? ' is-active' : ''}" data-settype="comment" data-slideid="${s.id}">Só texto</button>
+        <button class="mini-btn type-btn${s.type==='comparison' ? ' is-active' : ''}" data-settype="comparison" data-slideid="${s.id}">Comparação</button>
+      </div>
+      ${frameHtml}
+      <input type="file" accept="image/*" style="display:none" id="file-${s.id}">
+    `;
+    strip.appendChild(unit);
+
+    unit.querySelectorAll('[contenteditable]').forEach(el=>{
+      el.addEventListener('paste', function(e){
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+        document.execCommand('insertText', false, text);
+      });
+      el.addEventListener('blur', ()=>{ s[el.getAttribute('data-field')] = el.innerText; persistSlides(); });
+    });
+
+    const fileInput = unit.querySelector(`#file-${s.id}`);
+    unit.querySelectorAll('.f-imgslot, .f-avatar').forEach(slot=>{
+      slot.addEventListener('click', ()=>{ fileInput.dataset.targetKey = slot.getAttribute('data-imgkey'); fileInput.click(); });
+    });
+    fileInput.addEventListener('change', async (e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      const targetKey = fileInput.dataset.targetKey;
+      try{
+        if(targetKey === 'avatar'){
+          const { dataUrl } = await resizeImage(file, 200, 1, 'png');
+          s.avatarImg = dataUrl;
+          renderSlides();
+          await saveSlideImage(s.id, 'avatar', dataUrl);
+        }else{
+          const { dataUrl, ratio } = await resizeImage(file, 900, 0.72);
+          if(targetKey === 'img'){ s.img = dataUrl; s.imgRatio = ratio; }
+          else if(targetKey === 'colA'){ s.colAImg = dataUrl; s.colAImgRatio = ratio; }
+          else if(targetKey === 'colB'){ s.colBImg = dataUrl; s.colBImgRatio = ratio; }
+          renderSlides();
+          await saveSlideImage(s.id, targetKey, dataUrl);
+          await persistSlides();
+        }
+      }catch(err){
+        console.error('Erro ao processar imagem', err);
+        alert('Não consegui processar essa imagem. Tenta outra foto ou um formato diferente (JPG/PNG).');
+      }
+      fileInput.value = '';
+    });
+
+    unit.querySelector('[data-remove]').addEventListener('click', async ()=>{
+      try{ await window.storage.delete(imgKey(s.id,'img'), true); }catch(e){}
+      try{ await window.storage.delete(imgKey(s.id,'colA'), true); }catch(e){}
+      try{ await window.storage.delete(imgKey(s.id,'colB'), true); }catch(e){}
+      slides = slides.filter(x=>x.id!==s.id);
+      persistSlides(); renderSlides();
+    });
+
+    unit.querySelectorAll('[data-settype]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        convertSlideType(s, btn.getAttribute('data-settype'));
+        persistSlides();
+        renderSlides();
+      });
+    });
+
+    unit.querySelector('[data-download]').addEventListener('click', async (e)=>{
+      const btn = e.target;
+      const original = btn.innerText;
+      btn.disabled = true; btn.innerText='Gerando...';
+      const frameNode = document.getElementById(`frame-${s.id}`);
+      try{
+        const canvas = await html2canvas(frameNode, {scale:3, backgroundColor:'#ffffff', useCORS:true, allowTaint:true});
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        await shareOrDownloadSingle(blob, `flowlance-slide-${idx+1}.png`);
+      }catch(err){
+        console.error(err);
+        alert('Não foi possível gerar a imagem. Tenta no Chrome/Safari atualizado.');
+      }
+      btn.disabled = false; btn.innerText = original;
+    });
+  });
+}
+
+/* No celular, usa o menu nativo de compartilhar (salva direto na galeria).
+   No desktop, ou se o compartilhamento não for suportado, baixa normalmente. */
+async function shareOrDownloadSingle(blob, filename){
+  const file = new File([blob], filename, {type:'image/png'});
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    try{
+      await navigator.share({files:[file]});
+      return;
+    }catch(err){
+      if(err && err.name === 'AbortError') return; // usuário cancelou o compartilhamento
+    }
+  }
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = url;
+  document.body.appendChild(link); link.click(); document.body.removeChild(link);
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+}
+
+async function downloadAllSlides(){
+  if(slides.length === 0) return;
+  const btn = document.getElementById('downloadAllBtn');
+  const project = projects.find(p=>p.id===currentProjectId);
+  const safeName = (project ? project.name : 'flowlance').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'flowlance';
+  const originalLabel = btn.innerText;
+  btn.disabled = true;
+
+  const files = [];
+  for(let i=0; i<slides.length; i++){
+    const s = slides[i];
+    btn.innerText = `Gerando ${i+1}/${slides.length}...`;
+    const frameNode = document.getElementById(`frame-${s.id}`);
+    if(!frameNode) continue;
+    try{
+      const canvas = await html2canvas(frameNode, {scale:3, backgroundColor:'#ffffff', useCORS:true, allowTaint:true});
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      files.push(new File([blob], `${safeName}-slide-${i+1}.png`, {type:'image/png'}));
+    }catch(err){
+      console.error('Erro ao gerar slide', i+1, err);
+    }
+  }
+
+  // Celular: tenta compartilhar todas de uma vez pro menu nativo (salvar na galeria)
+  if(navigator.canShare && navigator.canShare({files})){
+    try{
+      btn.innerText = 'Abrindo compartilhamento...';
+      await navigator.share({files});
+      btn.disabled = false; btn.innerText = originalLabel;
+      return;
+    }catch(err){
+      if(err && err.name === 'AbortError'){ btn.disabled = false; btn.innerText = originalLabel; return; }
+      // se falhar por outro motivo, cai pro fallback de zip abaixo
+    }
+  }
+
+  // Desktop / sem suporte a compartilhar múltiplos arquivos: baixa um .zip único
+  try{
+    btn.innerText = 'Compactando...';
+    const zip = new JSZip();
+    files.forEach(f => zip.file(f.name, f));
+    const zipBlob = await zip.generateAsync({type:'blob'});
+    const url = URL.createObjectURL(zipBlob);
+    const link = document.createElement('a');
+    link.download = `${safeName}.zip`;
+    link.href = url;
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  }catch(err){
+    console.error('Erro ao gerar zip', err);
+    alert('Não foi possível baixar tudo de uma vez. Tenta baixar slide por slide.');
+  }
+  btn.disabled = false;
+  btn.innerText = originalLabel;
+}
+document.getElementById('downloadAllBtn').addEventListener('click', downloadAllSlides);
+
+/* ===================== ROTEIRO BUILDER ===================== */
+function fillSelect(id, list){
+  const sel = document.getElementById(id);
+  sel.innerHTML = list.map(t=>`<option value="${t.replace(/"/g,'&quot;')}">${t}</option>`).join('');
+}
+fillSelect('r-hook', roteiroLib.hook);
+fillSelect('r-agitar', roteiroLib.agitar);
+fillSelect('r-solucao', roteiroLib.solucao);
+fillSelect('r-cta', roteiroLib.cta);
+
+document.getElementById('montarRoteiro').addEventListener('click', ()=>{
+  const hook = document.getElementById('r-hook').value;
+  const agitar = document.getElementById('r-agitar').value;
+  const solucao = document.getElementById('r-solucao').value;
+  const cta = document.getElementById('r-cta').value;
+  document.getElementById('roteiroText').innerText = `[HOOK]\n${hook}\n\n[AGITAR]\n${agitar}\n\n[SOLUÇÃO]\n${solucao}\n\n[CTA]\n${cta}`;
+  document.getElementById('roteiroPreview').style.display = 'block';
+});
+document.getElementById('copyRoteiro').addEventListener('click', ()=>{
+  navigator.clipboard.writeText(document.getElementById('roteiroText').innerText).then(()=>{
+    const btn = document.getElementById('copyRoteiro');
+    const original = btn.innerText;
+    btn.innerText = 'Copiado!';
+    setTimeout(()=> btn.innerText = original, 1500);
+  });
+});
+
+/* ===================== INIT ===================== */
+loadIdeas();
+loadProjects();
+</script>
+</body>
+</html>
